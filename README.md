@@ -14,9 +14,9 @@ Simply drop the folder into your Godot Project. Or better yet, use this reposito
 
 ### Looking for more?
 
-Check out my commercial assets: 
+Check out Nylon!
 
-Nylon for Godot: https://theduriel.itch.io/nylon (Deep Dialogue sequencer.)
+Nylon for Godot is a Deep Dialogue sequencing addon, perfect for making complex RPG dialogue, cutscenes, and more. It's easily modified and used over the network as well, and includes a template project that incldues **many many more** utility systems for quickly building up your own game. Including menu and game state management, option menus, save files, audio, and more.
 
 ### Support me!
 

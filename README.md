@@ -8,6 +8,10 @@ This repository and all files within it are licensed under MIT.
 
 To give appropriate credit, include the license in your game and name te author. Thank you!
 
+### Usage
+
+Simply drop the folder into your Godot Project. Or better yet, use this repository as a submodule!
+
 ### Looking for more?
 
 Check out my commercial assets: 

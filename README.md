@@ -6,7 +6,7 @@ Created and maintained by Manuel 'TheDuriel' Fischer.
 
 This repository and all files within it are licensed under MIT.
 
-To give appropriate credit, include the license in your game and name te author. Thank you!
+To give appropriate credit, include the license in your game and name the author. Thank you!
 
 ### Usage
 

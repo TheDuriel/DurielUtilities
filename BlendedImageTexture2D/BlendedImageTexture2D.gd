@@ -7,8 +7,18 @@ extends ImageTexture
 		if value:
 			bake()
 
-@export var texture_base: Texture2D
-@export var texture_blend: Texture2D
+@export var texture_base: Texture2D:
+	set(value):
+		if value is CompressedTexture2D:
+			return
+		texture_base = value
+		_needs_baking = true
+@export var texture_blend: Texture2D:
+	set(value):
+		if value is CompressedTexture2D:
+			return
+		texture_blend = value
+		_needs_baking = true
 
 enum BLEND_MODE {
 		NORMAL, #DISSOLVE,
@@ -18,14 +28,34 @@ enum BLEND_MODE {
 		PIN_LIGHT, HARD_MIX, DIFFERENCE, EXCLUSION, SUBTRACT, #DIVIDE,
 		#HUE, SATURATION, COLOR, LUMINOSITY
 		}
-@export var blend_mode: BLEND_MODE = BLEND_MODE.NORMAL
+@export var blend_mode: BLEND_MODE = BLEND_MODE.NORMAL:
+	set(value):
+		blend_mode = value
+		_needs_baking = true
 
-@export_range(0.0, 1.0) var opacity: float = 1.0
+@export_range(0.0, 1.0) var opacity: float = 1.0:
+	set(value):
+		opacity = value
+		_needs_baking = true
 enum ALPHA_MODE {KEEP_BASE, KEEP_BLEND, DISCARD}
-@export var alpha_mode: ALPHA_MODE = ALPHA_MODE.KEEP_BASE
+@export var alpha_mode: ALPHA_MODE = ALPHA_MODE.KEEP_BASE:
+	set(value):
+		alpha_mode = value
+		_needs_baking = true
+
+var _needs_baking: bool = false
 
 
 func bake() -> void:
+	if texture_base is BlendedImageTexture2D or texture_base is MaskedImageTexture2D:
+		texture_base.bake()
+	if texture_blend is BlendedImageTexture2D or texture_blend is MaskedImageTexture2D:
+		texture_blend.bake()
+	
+	if not _needs_baking:
+		return
+	_needs_baking = false
+	
 	var operation: Callable
 	
 	match blend_mode:
@@ -78,3 +108,4 @@ func bake() -> void:
 			image.set_pixel(x, y, new_col)
 	
 	set_image(image)
+	emit_changed()

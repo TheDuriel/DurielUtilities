@@ -7,17 +7,47 @@ extends ImageTexture
 		if value:
 			bake()
 
-@export var texture_base: Texture2D
-@export var texture_blend: Texture2D
+@export var texture_base: Texture2D:
+	set(value):
+		if value is CompressedTexture2D:
+			return
+		if value:
+			texture_base = value
+			_needs_baking = true
+@export var texture_blend: Texture2D:
+	set(value):
+		if value is CompressedTexture2D:
+			return
+		if value:
+			texture_blend = value
+			_needs_baking = true
 
 enum CHANNEL {RED, GREEN, BLUE, ALPHA}
-@export var channel: CHANNEL = CHANNEL.RED
+@export var channel: CHANNEL = CHANNEL.RED:
+	set(value):
+		channel = value
+		_needs_baking = true
 
 enum ALPHA_MODE {REPLACE, MIX}
-@export var alpha_mode: ALPHA_MODE = ALPHA_MODE.REPLACE
+@export var alpha_mode: ALPHA_MODE = ALPHA_MODE.REPLACE:
+	set(value):
+		alpha_mode = value
+		_needs_baking = true
+
+var _needs_baking: bool = false
 
 
 func bake() -> void:
+	if texture_base is BlendedImageTexture2D or texture_base is MaskedImageTexture2D:
+		texture_base.bake()
+	if texture_blend is BlendedImageTexture2D or texture_blend is MaskedImageTexture2D:
+		texture_blend.bake()
+	
+	if not _needs_baking:
+		return
+	
+	_needs_baking = false
+	
 	var base_image: Image = texture_base.get_image()
 	var base_size: Vector2i = base_image.get_size()
 	var blend_image: Image = texture_blend.get_image()
@@ -58,3 +88,4 @@ func bake() -> void:
 			image.set_pixel(x, y, new_col)
 	
 	set_image(image)
+	emit_changed()

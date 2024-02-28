@@ -6,6 +6,12 @@
 script = ExtResource("1_23li1")
 color_rect = NodePath("CanvasLayer/ColorRect")
 
+[node name="InputBlocker" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="ColorRect" type="ColorRect" parent="CanvasLayer"]

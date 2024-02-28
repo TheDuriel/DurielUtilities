@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://cs2d5j6ih64yl"]
+
+[ext_resource type="Script" path="res://DurielUtilities/ScreenTransition/FadeTransition/FadeTransition.gd" id="1_23li1"]
+
+[node name="FadeTransition" type="Node" node_paths=PackedStringArray("color_rect")]
+script = ExtResource("1_23li1")
+color_rect = NodePath("CanvasLayer/ColorRect")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)

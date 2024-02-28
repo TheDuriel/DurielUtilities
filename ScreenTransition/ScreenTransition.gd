@@ -19,18 +19,18 @@ func _post_ready() -> void:
 	get_parent().move_child(self, -1)
 
 
-func empty_to_solid() -> Signal:
-	_empty_to_solid.call_deferred()
+func empty_to_solid(hide_when_done: bool = false) -> Signal:
+	_empty_to_solid.call_deferred(hide_when_done)
 	return transition_completed
 
 
-func solid_to_empty() -> Signal:
-	_solid_to_empty.call_deferred()
+func solid_to_empty(hide_when_done: bool = true) -> Signal:
+	_solid_to_empty.call_deferred(hide_when_done)
 	return transition_completed
 
 
 # Override this in inherited scene
-func _empty_to_solid() -> void:
+func _empty_to_solid(hide_when_done: bool) -> void:
 	_set_children_visibility(true)
 	
 	# Your animation here
@@ -39,11 +39,13 @@ func _empty_to_solid() -> void:
 	#await t.finished
 	
 	# Always emit this when done.
+	if hide_when_done:
+		_set_children_visibility(false)
 	transition_completed.emit()
 
 
 # Override this in inherited scene
-func _solid_to_empty() -> void:
+func _solid_to_empty(hide_when_done: bool) -> void:
 	_set_children_visibility(true)
 	
 	# Your animation here
@@ -51,12 +53,12 @@ func _solid_to_empty() -> void:
 	#t.tween_property(self, "modulate", Color(0.0, 0.0, 0.0, 0.0), 0.5)
 	#await t.finished
 	
-	# Always make invisible when done.
-	_set_children_visibility(false)
+	if hide_when_done:
+		_set_children_visibility(false)
 	transition_completed.emit()
 
 
 func _set_children_visibility(visibility: bool) -> void:
 	for child: Node in get_children():
-		if child is CanvasItem:
+		if child is CanvasItem or child is CanvasLayer:
 			child.visible = visibility

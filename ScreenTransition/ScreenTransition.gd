@@ -7,7 +7,8 @@ extends Node
 ## Usage example:
 ## await Interface.generic_transition.empty_to_solid()
 
-signal transition_completed
+signal empty_to_solid_completed
+signal solid_to_empty_completed
 
 
 func _ready() -> void:
@@ -21,12 +22,12 @@ func _post_ready() -> void:
 
 func empty_to_solid(hide_when_done: bool = false) -> Signal:
 	_empty_to_solid.call_deferred(hide_when_done)
-	return transition_completed
+	return empty_to_solid_completed
 
 
 func solid_to_empty(hide_when_done: bool = true) -> Signal:
 	_solid_to_empty.call_deferred(hide_when_done)
-	return transition_completed
+	return solid_to_empty_completed
 
 
 # Override this in inherited scene
@@ -41,7 +42,7 @@ func _empty_to_solid(hide_when_done: bool) -> void:
 	# Always emit this when done.
 	if hide_when_done:
 		_set_children_visibility(false)
-	transition_completed.emit()
+	empty_to_solid_completed.emit()
 
 
 # Override this in inherited scene
@@ -55,7 +56,7 @@ func _solid_to_empty(hide_when_done: bool) -> void:
 	
 	if hide_when_done:
 		_set_children_visibility(false)
-	transition_completed.emit()
+	solid_to_empty_completed.emit()
 
 
 func _set_children_visibility(visibility: bool) -> void:

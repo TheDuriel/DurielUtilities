@@ -11,16 +11,21 @@ extends ImageTexture
 	set(value):
 		if value is CompressedTexture2D:
 			return
-		if value:
-			texture_base = value
-			_needs_baking = true
+		if texture_base:
+			texture_base.changed.disconnect(_on_subtexture_changed)
+		texture_base = value
+		texture_base.changed.connect(_on_subtexture_changed)
+		_needs_baking = true
+
 @export var texture_blend: Texture2D:
 	set(value):
 		if value is CompressedTexture2D:
 			return
-		if value:
-			texture_blend = value
-			_needs_baking = true
+		if texture_blend:
+			texture_blend.changed.disconnect(_on_subtexture_changed)
+		texture_blend = value
+		texture_blend.changed.connect(_on_subtexture_changed)
+		_needs_baking = true
 
 enum CHANNEL {RED, GREEN, BLUE, ALPHA}
 @export var channel: CHANNEL = CHANNEL.RED:
@@ -32,6 +37,11 @@ enum ALPHA_MODE {REPLACE, MIX}
 @export var alpha_mode: ALPHA_MODE = ALPHA_MODE.REPLACE:
 	set(value):
 		alpha_mode = value
+		_needs_baking = true
+
+@export var make_black_alpha: bool = false:
+	set(value):
+		make_black_alpha = value
 		_needs_baking = true
 
 var _needs_baking: bool = false
@@ -85,7 +95,15 @@ func bake() -> void:
 				ALPHA_MODE.MIX:
 					new_col.a = base_a if base_a < blend_a else blend_a
 			
+			if make_black_alpha:
+				if is_equal_approx(new_col.r + new_col.g + new_col.b, 0.0):
+					new_col.a = 0.0
+			
 			image.set_pixel(x, y, new_col)
 	
 	set_image(image)
 	emit_changed()
+
+
+func _on_subtexture_changed() -> void:
+	_needs_baking = true

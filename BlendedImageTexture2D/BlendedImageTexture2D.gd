@@ -11,13 +11,20 @@ extends ImageTexture
 	set(value):
 		if value is CompressedTexture2D:
 			return
+		if texture_base:
+			texture_base.changed.disconnect(_on_subtexture_changed)
 		texture_base = value
+		texture_base.changed.connect(_on_subtexture_changed)
 		_needs_baking = true
+
 @export var texture_blend: Texture2D:
 	set(value):
 		if value is CompressedTexture2D:
 			return
+		if texture_blend:
+			texture_blend.changed.disconnect(_on_subtexture_changed)
 		texture_blend = value
+		texture_blend.changed.connect(_on_subtexture_changed)
 		_needs_baking = true
 
 enum BLEND_MODE {
@@ -37,10 +44,16 @@ enum BLEND_MODE {
 	set(value):
 		opacity = value
 		_needs_baking = true
+
 enum ALPHA_MODE {KEEP_BASE, KEEP_BLEND, DISCARD}
 @export var alpha_mode: ALPHA_MODE = ALPHA_MODE.KEEP_BASE:
 	set(value):
 		alpha_mode = value
+		_needs_baking = true
+
+@export var make_black_alpha: bool = false:
+	set(value):
+		make_black_alpha = value
 		_needs_baking = true
 
 var _needs_baking: bool = false
@@ -105,7 +118,15 @@ func bake() -> void:
 				ALPHA_MODE.DISCARD:
 					new_col.a = 1.0
 			
+			if make_black_alpha:
+				if is_equal_approx(new_col.r + new_col.g + new_col.b, 0.0):
+					new_col.a = 0.0
+			
 			image.set_pixel(x, y, new_col)
 	
 	set_image(image)
 	emit_changed()
+
+
+func _on_subtexture_changed() -> void:
+	_needs_baking = true

@@ -47,7 +47,7 @@ static func linear_burn(base: Color, blend: Color, opacity: float) -> Color:
 
 
 static func _linear_burn_v3v3(base: Color, blend: Color) -> Color:
-	return max(base + blend - Color.WHITE, Color.BLACK)
+	return Color(_linear_burn_ff(base.r, blend.r), _linear_burn_ff(base.g, blend.g), _linear_burn_ff(base.b, blend.b))
 
 
 static func _linear_burn_ff(base: float, blend: float) -> float:
@@ -95,7 +95,7 @@ static func linear_dodge(base: Color, blend: Color, opacity: float) -> Color:
 
 
 static func _linear_dodge_v3v3(base: Color, blend: Color) -> Color:
-	return min(base + blend, Color.WHITE)
+	return Color(_linear_dodge_ff(base.r, blend.r), _linear_dodge_ff(base.g, blend.g), _linear_dodge_ff(base.b, blend.b))
 
 
 static func _linear_dodge_ff(base: float, blend: float) -> float:
@@ -187,7 +187,7 @@ static func difference(base: Color, blend: Color, opacity: float) -> Color:
 
 
 static func _difference_v3v3(base: Color, blend: Color) -> Color:
-	return abs(base - blend)
+	return Color(abs(base.r - blend.r), abs(base.g - blend.g), abs(base.b - blend.b))
 
 
 static func exclusion(base: Color, blend: Color, opacity: float) -> Color:
@@ -203,7 +203,7 @@ static func subract(base: Color, blend: Color, opacity: float) -> Color:
 
 
 static func _subract_v3v3(base: Color, blend: Color) -> Color:
-	return max(base + blend - Color.WHITE, Color.BLACK);
+	return Color(_subract_ff(base.r, blend.r), _subract_ff(base.g, blend.g), _subract_ff(base.b, blend.b))
 
 
 static func _subract_ff(base: float, blend: float) -> float:

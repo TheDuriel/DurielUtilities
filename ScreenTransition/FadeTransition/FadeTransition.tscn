@@ -2,22 +2,23 @@
 
 [ext_resource type="Script" path="res://DurielUtilities/ScreenTransition/FadeTransition/FadeTransition.gd" id="1_23li1"]
 
-[node name="FadeTransition" type="Node" node_paths=PackedStringArray("color_rect")]
-script = ExtResource("1_23li1")
-color_rect = NodePath("CanvasLayer/ColorRect")
-
-[node name="InputBlocker" type="Control" parent="."]
+[node name="FadeTransition" type="Control" node_paths=PackedStringArray("color_rect")]
+visible = false
+top_level = true
 layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-
-[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 1)
+script = ExtResource("1_23li1")
+color_rect = NodePath("ColorRect")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)

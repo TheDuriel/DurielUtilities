@@ -1,5 +1,6 @@
+@tool
 class_name ScreenTransition
-extends Node
+extends Control
 ## ScreenTransition
 ##
 ## Base class for building reusable screen transitions from
@@ -10,14 +11,14 @@ extends Node
 signal empty_to_solid_completed
 signal solid_to_empty_completed
 
+@export var test_empty_to_solid: bool = false:
+	set(value): empty_to_solid(true)
+@export var test_solid_to_empty: bool = false:
+	set(value): solid_to_empty(true)
+
 
 func _ready() -> void:
-	_set_children_visibility(false)
-	_post_ready.call_deferred()
-
-
-func _post_ready() -> void:
-	get_parent().move_child(self, -1)
+	visible = false
 
 
 func empty_to_solid(hide_when_done: bool = false) -> Signal:
@@ -32,7 +33,7 @@ func solid_to_empty(hide_when_done: bool = true) -> Signal:
 
 # Override this in inherited scene
 func _empty_to_solid(hide_when_done: bool) -> void:
-	_set_children_visibility(true)
+	visible = true
 	
 	# Your animation here
 	#var t: Tween = create_tween()
@@ -40,26 +41,18 @@ func _empty_to_solid(hide_when_done: bool) -> void:
 	#await t.finished
 	
 	# Always emit this when done.
-	if hide_when_done:
-		_set_children_visibility(false)
+	visible = not hide_when_done
 	empty_to_solid_completed.emit()
 
 
 # Override this in inherited scene
 func _solid_to_empty(hide_when_done: bool) -> void:
-	_set_children_visibility(true)
+	visible = true
 	
 	# Your animation here
 	#var t: Tween = create_tween()
 	#t.tween_property(self, "modulate", Color(0.0, 0.0, 0.0, 0.0), 0.5)
 	#await t.finished
 	
-	if hide_when_done:
-		_set_children_visibility(false)
+	visible = not hide_when_done
 	solid_to_empty_completed.emit()
-
-
-func _set_children_visibility(visibility: bool) -> void:
-	for child: Node in get_children():
-		if child is CanvasItem or child is CanvasLayer:
-			child.visible = visibility

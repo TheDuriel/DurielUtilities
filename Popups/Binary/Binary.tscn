@@ -1,12 +1,12 @@
 [gd_scene load_steps=2 format=3 uid="uid://qhh3itgspxf0"]
 
-[ext_resource type="Script" path="res://DurielUtilities/Popups/Binary/Binary.gd" id="1_anr3i"]
+[ext_resource type="Script" path="res://DurielUtilities/Popups/Binary/Binary.gd" id="1_58md0"]
 
 [node name="Binary" type="PanelContainer" node_paths=PackedStringArray("header_label", "yes_button", "no_button")]
 custom_minimum_size = Vector2(256, 0)
 offset_right = 166.0
 offset_bottom = 132.0
-script = ExtResource("1_anr3i")
+script = ExtResource("1_58md0")
 header_label = NodePath("VBoxContainer/Header")
 yes_button = NodePath("VBoxContainer/HBoxContainer/Yes")
 no_button = NodePath("VBoxContainer/HBoxContainer/No")

@@ -3,11 +3,17 @@ extends RefCounted
 
 signal changed(old_state: SimpleState, new_state: SimpleState)
 
+var _tree: SceneTree
+
 var _previous_state: SimpleState
 var active_state: SimpleState:
 	get:
 		return _active_state
 var _active_state: SimpleState = SimpleStateNone.new()
+
+
+func _init(scene_tree: SceneTree) -> void:
+	_tree = scene_tree
 
 
 func enter_state(new_state: SimpleState) -> void:
@@ -31,7 +37,7 @@ func _change_state(new_state: SimpleState) -> void:
 	
 	Logger.confirm(self, enter_state, "Entering %s" % Logger.get_object_file_name(new_state))
 	_active_state = new_state
-	_active_state.scene_tree = Simple.get_tree()
+	_active_state.scene_tree = _tree
 	
 	_active_state.enter.call_deferred(_previous_state)
 	await _active_state.entered

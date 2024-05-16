@@ -1,2 +1,2 @@
 class_name SimpleStateNone
-extends RefCounted
+extends SimpleState

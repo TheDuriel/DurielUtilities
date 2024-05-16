@@ -20,22 +20,22 @@ func _init(tree: SceneTree) -> void:
 	_tree = tree
 
 
-func add_task(task: Task) -> void:
-	add_task_to_end(task)
+func put_task(task: Task) -> void:
+	put_last(task)
 
 
 	# Add Task to the start of the queue
-func add_task_to_start(task: Task) -> void:
+func put_first(task: Task) -> void:
 	_insert_task_at(task, 0)
 
 
 	# Add Task to the end of the queue
-func add_task_to_end(task: Task) -> void:
+func put_last(task: Task) -> void:
 	_insert_task_at(task, _tasks.size())
 
 
 	# Add Task before Task
-func add_task_before(task: Task, before: Task) -> void:
+func put_task_before(task: Task, before: Task) -> void:
 	var index: int = 0
 	for idx: int in _tasks.size():
 		var value: Task = _tasks[idx]
@@ -46,34 +46,13 @@ func add_task_before(task: Task, before: Task) -> void:
 
 
 	# Add Task after Task
-func add_task_after(task: Task, after: Task) -> void:
+func put_task_after(task: Task, after: Task) -> void:
 	var index: int = _tasks.size()
 	for idx: int in _tasks.size():
 		var value: Task = _tasks[idx]
 		if value == after:
 			index = int(min(idx + 1, _tasks.size()))
 			break
-	_insert_task_at(task, index)
-
-
-	# Add Task before all Tasks of Type
-func add_task_before_all(task: Task, task_type: Script) -> void:
-	var index: int = 0
-	for idx: int in _tasks.size():
-		var value: Task = _tasks[idx]
-		if value.get_script() == task_type:
-			index = int(max(idx - 1, 0))
-			break
-	_insert_task_at(task, index)
-
-
-	# Add Task after all Tasks of Type
-func add_task_after_all(task: Task, task_type: Script) -> void:
-	var index: int = _tasks.size()
-	for idx: int in _tasks.size():
-		var value: Task = _tasks[idx]
-		if value.get_script() == task_type:
-			index = int(min(idx + 1, _tasks.size()))
 	_insert_task_at(task, index)
 
 

@@ -15,6 +15,8 @@ var busy: bool:
 var _tree: SceneTree
 var _tasks: Array[Task] = []
 
+var _dirty: bool = true
+
 
 func _init(tree: SceneTree) -> void:
 	_tree = tree
@@ -78,6 +80,7 @@ func _insert_task_at(task: Task, index: int) -> void:
 	task.completed.connect(_on_task_completed)
 	task.failed.connect(_on_task_failed)
 	
+	_dirty = true
 	_ready_tasks.call_deferred()
 	
 	task_queued.emit(task)
@@ -86,6 +89,10 @@ func _insert_task_at(task: Task, index: int) -> void:
 
 
 func _ready_tasks() -> void:
+	if not _dirty:
+		return
+	_dirty = false
+	
 	if slow_mode:
 		await _tree.create_timer(slow_mode_wait_time).timeout
 	

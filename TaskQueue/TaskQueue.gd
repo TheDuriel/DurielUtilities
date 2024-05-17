@@ -7,21 +7,23 @@ signal task_completed(task: Task)
 signal task_failed(task: Task)
 signal task_cancelled(task: Task)
 
+# For debugging, artifically slows the queue down.
 var slow_mode: bool = false
 var slow_mode_wait_time: float = 0.15
 
+# True if the queue is working. Useful for blocking user input until its done.
 var busy: bool:
 	get: return _tasks.is_empty()
+
 var _tree: SceneTree
 var _tasks: Array[Task] = []
-
 var _dirty: bool = true
 
 
 func _init(tree: SceneTree) -> void:
 	_tree = tree
 
-
+	# Add Task to the end of the queue
 func put_task(task: Task) -> void:
 	put_last(task)
 

@@ -1,10 +1,11 @@
 class_name BasePopup
 extends PanelContainer
 
-var popups: Popups
-var request: PopupRequest
+signal closed
 
-
-func configure(_popups: Popups, _request: PopupRequest) -> void:
-	popups = _popups
-	request = _request
+## Override me.
+## These warnings are ignored here.
+## You should statically type the override.
+@warning_ignore("untyped_declaration", "unused_parameter")
+func set_config(value) -> void:
+	Logger.warn(self, set_config, "You didn't override this.")

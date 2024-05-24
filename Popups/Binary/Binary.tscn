@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=3 uid="uid://b88377u1dlrdc"]
+
+[ext_resource type="Script" path="res://DurielUtilities/Popups/Binary/Binary.gd" id="1_gchfo"]
+
+[node name="Binary" type="PanelContainer" node_paths=PackedStringArray("header", "option_a", "option_b")]
+offset_right = 16.0
+offset_bottom = 16.0
+script = ExtResource("1_gchfo")
+header = NodePath("VBoxContainer/Header")
+option_a = NodePath("VBoxContainer/HBoxContainer/OptionA")
+option_b = NodePath("VBoxContainer/HBoxContainer/OptionB")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Header" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="OptionA" type="Button" parent="VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2
+
+[node name="OptionB" type="Button" parent="VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2

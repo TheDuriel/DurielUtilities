@@ -1,38 +1,26 @@
 class_name iPopupBinary
 extends BasePopup
 
-@export var header_label: Label
-@export var yes_button: Button
-@export var no_button: Button
+enum RESULT {A, B}
 
-var _request: PopupRequestBinary: # For proper typing.
-	get: return request
+signal handled(result: RESULT)
+
+@export var header: Label
+@export var option_a: Button
+@export var option_b: Button
 
 
 func _ready() -> void:
-	header_label.text = _request.header_label
-	yes_button.text = _request.yes_label
-	no_button.text = _request.no_label
-	
-	yes_button.pressed.connect(_on_yes_pressed)
-	no_button.pressed.connect(_on_no_pressed)
-	popups.input_blocker_pressed.connect(_on_input_blocker_pressed)
+	option_a.pressed.connect(_on_option_pressed.bind(RESULT.A))
+	option_b.pressed.connect(_on_option_pressed.bind(RESULT.B))
 
 
-
-func _on_yes_pressed() -> void:
-	_finish_with_result(PopupRequestBinary.RESULT.YES)
-
-
-func _on_no_pressed() -> void:
-	_finish_with_result(PopupRequestBinary.RESULT.NO)
+func set_config(config: PopupConfigurationBinary) -> void:
+	header.text = config.header
+	option_a.text = config.option_a
+	option_b.text = config.option_b
 
 
-func _on_input_blocker_pressed() -> void:
-	_finish_with_result(PopupRequestBinary.RESULT.NONE)
-
-
-func _finish_with_result(result: PopupRequestBinary.RESULT) -> void:
-	visible = false
-	queue_free()
-	_request.close(result)
+func _on_option_pressed(result: RESULT) -> void:
+	closed.emit()
+	handled.emit(result)

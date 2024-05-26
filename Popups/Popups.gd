@@ -23,14 +23,19 @@ var active_popup: BasePopup:
 
 
 func _init() -> void:
+	add_theme_constant_override("margin_top", 0)
+	add_theme_constant_override("margin_left", 0)
+	add_theme_constant_override("margin_bottom", 0)
+	add_theme_constant_override("margin_right", 0)
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	
 	_input_blocker = ColorRect.new()
 	_input_blocker.color = Color(0.0, 0.0, 0.0, 0.5)
+	_input_blocker.visible = false
 	add_child(_input_blocker)
 	
 	_center_container = CenterContainer.new()
 	add_child(_center_container)
-	
-	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 
 ## Pushes a new popup to the stack and displays it

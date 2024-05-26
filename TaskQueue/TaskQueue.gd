@@ -6,6 +6,9 @@ signal task_readied(task: Task)
 signal task_completed(task: Task)
 signal task_failed(task: Task)
 signal task_cancelled(task: Task)
+signal queue_finished
+
+var require_manual_flushing: bool = false
 
 # For debugging, artifically slows the queue down.
 var slow_mode: bool = false
@@ -21,6 +24,15 @@ var _tasks: Array[Task] = []
 
 func _init(tree: SceneTree) -> void:
 	_tree = tree
+
+
+func flush_manually() -> void:
+	if not require_manual_flushing:
+		Logger.warn(self, flush_manually, "require_manual_flushing is not true")
+		return
+	
+	_ready_tasks.call_deferred()
+
 
 	# Add Task to the end of the queue
 func put_task(task: Task) -> void:
@@ -81,7 +93,8 @@ func _insert_task_at(task: Task, index: int) -> void:
 	task.completed.connect(_on_task_completed)
 	task.failed.connect(_on_task_failed)
 	
-	_ready_tasks.call_deferred()
+	if not require_manual_flushing:
+		_ready_tasks.call_deferred()
 	
 	task_queued.emit(task)
 	
@@ -95,6 +108,7 @@ func _ready_tasks() -> void:
 	Logger.hint(self, _ready_tasks)
 	if _tasks.is_empty():
 		Logger.hint(self, _ready_tasks, "nothing to ready.")
+		queue_finished.emit()
 		return
 	
 	# All async tasks

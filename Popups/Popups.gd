@@ -28,13 +28,16 @@ func _init() -> void:
 	add_theme_constant_override("margin_bottom", 0)
 	add_theme_constant_override("margin_right", 0)
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
 	_input_blocker = ColorRect.new()
 	_input_blocker.color = Color(0.0, 0.0, 0.0, 0.5)
 	_input_blocker.visible = false
+	_input_blocker.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(_input_blocker)
 	
 	_center_container = CenterContainer.new()
+	_center_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_center_container)
 
 

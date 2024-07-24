@@ -2,8 +2,6 @@
 class_name FancyContainer
 extends MarginContainer
 
-# To use this node, you must 
-
 const A_BOX_NAME: String = "a_box"
 const A_BOX_MARGIN_NAMES: Array[String] = [
 		"a_box_margin_left", "a_box_margin_up",

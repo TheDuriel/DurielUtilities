@@ -14,13 +14,33 @@ extends Theme
 
 
 func _init() -> void:
+	# Must be delayed otherwise MainLoop is null.
+	_post_init.call_deferred()
+
+
+func _post_init() -> void:
 	# Subscribe to the adding of ANY node to the tree.
-	var main_loop: MainLoop = Engine.get_main_loop()
+	var main_loop = Engine.get_main_loop()
 	if main_loop is SceneTree:
+		_recursively_set_the_materials(main_loop)
 		main_loop.node_added.connect(_on_node_added)
 
 
 func _on_node_added(node: Node) -> void:
+	_apply_material(node)
+
+
+
+func _recursively_set_the_materials(scene_tree: SceneTree) -> void:
+	var todo: Array[Node] = [scene_tree.root]
+	
+	while not todo.is_empty():
+		var node: Node = todo.pop_front()
+		todo.append_array(node.get_children())
+		_apply_material(node)
+
+
+func _apply_material(node: Node) -> void:
 	if not node is Control:
 		return
 	
@@ -38,7 +58,5 @@ func _on_node_added(node: Node) -> void:
 	
 	for name: String in possible_names:
 		if name in material_associations:
-			#node.set.call_deferred("material", material_associations[name])
 			node.material = material_associations[name]
-			print("applied %s" % node.get_path())
 			return

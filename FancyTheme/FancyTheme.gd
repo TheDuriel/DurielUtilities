@@ -33,7 +33,6 @@ func _on_node_added(node: Node) -> void:
 
 func _recursively_set_the_materials(scene_tree: SceneTree) -> void:
 	var todo: Array[Node] = [scene_tree.root]
-	
 	while not todo.is_empty():
 		var node: Node = todo.pop_front()
 		todo.append_array(node.get_children())

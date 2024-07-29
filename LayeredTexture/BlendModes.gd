@@ -11,26 +11,28 @@ enum MODE {
 		#HUE, SATURATION, COLOR, LUMINOSITY
 		}
 
-const OPERATIONS: Dictionary = {
-		MODE.NORMAL : BlendModes.normal,
-		MODE.DARKEN : BlendModes.darken,
-		MODE.MULTIPLY : BlendModes.multiply,
-		MODE.COLOR_BURN : BlendModes.color_burn,
-		MODE.LINEAR_BURN : BlendModes.linear_burn,
-		MODE.SCREEN : BlendModes.screen,
-		MODE.COLOR_DODGE : BlendModes.color_dodge,
-		MODE.LINEAR_DODGE : BlendModes.linear_dodge,
-		MODE.OVERLAY : BlendModes.overlay,
-		MODE.SOFT_LIGHT : BlendModes.soft_light,
-		MODE.HARD_LIGHT : BlendModes.hard_light,
-		MODE.VIVID_LIGHT : BlendModes.vivid_light,
-		MODE.LINEAR_LIGHT : BlendModes.linear_light,
-		MODE.PIN_LIGHT : BlendModes.pin_light,
-		MODE.HARD_MIX : BlendModes.hard_mix,
-		MODE.DIFFERENCE : BlendModes.difference,
-		MODE.EXCLUSION : BlendModes.exclusion,
-		MODE.SUBTRACT : BlendModes.subract,
-		}
+
+static func get_operation(mode: MODE) -> Callable:
+	match mode:
+		MODE.NORMAL: return normal
+		MODE.DARKEN: return darken
+		MODE.MULTIPLY: return multiply
+		MODE.COLOR_BURN: return color_burn
+		MODE.LINEAR_BURN: return linear_burn
+		MODE.SCREEN: return screen
+		MODE.COLOR_DODGE: return color_dodge
+		MODE.LINEAR_DODGE: return linear_dodge
+		MODE.OVERLAY: return overlay
+		MODE.SOFT_LIGHT: return soft_light
+		MODE.HARD_LIGHT: return hard_light
+		MODE.VIVID_LIGHT: return vivid_light
+		MODE.LINEAR_LIGHT: return linear_light
+		MODE.PIN_LIGHT: return pin_light
+		MODE.HARD_MIX: return hard_mix
+		MODE.DIFFERENCE: return difference
+		MODE.EXCLUSION: return exclusion
+		MODE.SUBTRACT: return subract
+	return normal
 
 
 static func normal(base: Color, blend: Color, opacity: float) -> Color:

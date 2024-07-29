@@ -53,6 +53,9 @@ func _bake() -> void:
 			image = Image.create(size.x, size.y, true, Image.FORMAT_RGBA8)
 		
 		BASE_MODE.TEXTURE:
+			if not base_texture:
+				return
+			
 			image = base_texture.get_image()
 			if image.is_compressed():
 				var error: int = image.decompress()
@@ -97,7 +100,7 @@ func _blend_layer(image: Image, layer: TextureLayer) -> Image:
 				base_size.x, base_size.y,
 				base_image.has_mipmaps(), Image.FORMAT_RGBA8)
 	
-	var operation: Callable = BlendModes.OPERATIONS[layer.blend_mode]
+	var operation: Callable = BlendModes.get_operation(layer.blend_mode)
 	
 	for x: int in base_size.x:
 		for y: int in base_size.y:

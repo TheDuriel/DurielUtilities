@@ -7,6 +7,17 @@ extends ImageTexture
 	set(value):
 		size = value
 		_bake()
+
+enum BASE_MODE {COLOR, TEXTURE}
+@export var base_mode: BASE_MODE = BASE_MODE.COLOR:
+	set(value):
+		base_mode = value
+		_bake()
+
+@export var base_color: Color = Color.HOT_PINK:
+	set(value):
+		base_color = value
+		_bake()
 @export var base_texture: Texture2D:
 	set(value):
 		base_texture = value
@@ -34,14 +45,22 @@ func _on_layer_changed() -> void:
 
 func _bake() -> void:
 	
-	var image: Image = base_texture.get_image()
-	if image.is_compressed():
-		var error: int = image.decompress()
-		if not error == OK:
-			Logger.warn(self, _bake, "Could not decompress base texture. Failed bake.")
-			return
+	var image: Image
 	
-	image.resize(size.x, size.y)
+	match base_mode:
+		
+		BASE_MODE.COLOR:
+			image = Image.create(size.x, size.y, true, Image.FORMAT_RGBA8)
+		
+		BASE_MODE.TEXTURE:
+			image = base_texture.get_image()
+			if image.is_compressed():
+				var error: int = image.decompress()
+				if not error == OK:
+					Logger.warn(self, _bake, "Could not decompress base texture. Failed bake.")
+					return
+			
+			image.resize(size.x, size.y)
 	
 	for layer: TextureLayer in layers:
 		if not layer:

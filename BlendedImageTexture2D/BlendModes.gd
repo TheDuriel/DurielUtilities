@@ -1,6 +1,37 @@
 class_name BlendModes
 extends RefCounted
 
+# Commented out ones are not implemented.
+enum MODE {
+		NORMAL, #DISSOLVE,
+		DARKEN, MULTIPLY, COLOR_BURN, LINEAR_BURN, #DARKER_COLOR,
+		LIGHTEN, SCREEN, COLOR_DODGE, LINEAR_DODGE, #LIGHTER_COLOR,
+		OVERLAY, SOFT_LIGHT, HARD_LIGHT, VIVID_LIGHT, LINEAR_LIGHT,
+		PIN_LIGHT, HARD_MIX, DIFFERENCE, EXCLUSION, SUBTRACT, #DIVIDE,
+		#HUE, SATURATION, COLOR, LUMINOSITY
+		}
+
+const OPERATIONS: Dictionary = {
+		MODE.NORMAL : BlendModes.normal,
+		MODE.DARKEN : BlendModes.darken,
+		MODE.MULTIPLY : BlendModes.multiply,
+		MODE.COLOR_BURN : BlendModes.color_burn,
+		MODE.LINEAR_BURN : BlendModes.linear_burn,
+		MODE.SCREEN : BlendModes.screen,
+		MODE.COLOR_DODGE : BlendModes.color_dodge,
+		MODE.LINEAR_DODGE : BlendModes.linear_dodge,
+		MODE.OVERLAY : BlendModes.overlay,
+		MODE.SOFT_LIGHT : BlendModes.soft_light,
+		MODE.HARD_LIGHT : BlendModes.hard_light,
+		MODE.VIVID_LIGHT : BlendModes.vivid_light,
+		MODE.LINEAR_LIGHT : BlendModes.linear_light,
+		MODE.PIN_LIGHT : BlendModes.pin_light,
+		MODE.HARD_MIX : BlendModes.hard_mix,
+		MODE.DIFFERENCE : BlendModes.difference,
+		MODE.EXCLUSION : BlendModes.exclusion,
+		MODE.SUBTRACT : BlendModes.subract,
+		}
+
 
 static func normal(base: Color, blend: Color, opacity: float) -> Color:
 	return _normal_v3v3(base, blend) * opacity + base * (1.0 - opacity)

@@ -1,7 +1,7 @@
 @tool
 class_name LayeredImageTexture2D
-extends ImageTexture
 
+extends ImageTexture
 
 @export var size: Vector2i = Vector2i(100, 100):
 	set(value):
@@ -36,6 +36,13 @@ enum BASE_MODE {COLOR, TEXTURE}
 
 
 func _init() -> void:
+	if not Engine.is_editor_hint():
+		# Avoid baking at runtime, under the assumption that we have baked in the editor.
+		# This is a very naive check, but should avoid most error cases.
+		if get_height() == size.y:
+			return
+		
+	
 	_bake()
 
 

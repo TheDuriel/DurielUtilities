@@ -1,6 +1,7 @@
 class_name BasePopup
 extends PanelContainer
 
+@warning_ignore("unused_signal")
 signal closed
 
 ## Override me.

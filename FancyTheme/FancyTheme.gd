@@ -10,17 +10,22 @@ extends Theme
 # Then add a Material value to the Key (select Object, then drag the material in)
 
 @export_category("Fancy Theme")
+@export var enable_materials: bool = true
 @export var material_associations: Dictionary = {} # Control Type : Material
 
 
 func _init() -> void:
 	if Engine.is_editor_hint():
 		return
+	if not enable_materials:
+		return
 	# Must be delayed otherwise MainLoop is null.
 	_post_init.call_deferred()
 
 
 func _post_init() -> void:
+	if not enable_materials:
+		return
 	# Subscribe to the adding of ANY node to the tree.
 	var main_loop: MainLoop = Engine.get_main_loop()
 	if main_loop is SceneTree:
@@ -29,10 +34,14 @@ func _post_init() -> void:
 
 
 func _on_node_added(node: Node) -> void:
+	if not enable_materials:
+		return
 	_apply_material(node)
 
 
 func _recursively_set_the_materials(scene_tree: SceneTree) -> void:
+	if not enable_materials:
+		return
 	var todo: Array[Node] = [scene_tree.root]
 	while not todo.is_empty():
 		var node: Node = todo.pop_front()

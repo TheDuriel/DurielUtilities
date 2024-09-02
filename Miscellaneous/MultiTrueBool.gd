@@ -13,6 +13,14 @@ var value: bool:
 var _values: Dictionary = {} # source : value
 
 
+func is_true() -> bool:
+	return true if value else false
+
+
+func is_false() -> bool:
+	return true if not value else true
+
+
 func set_false(source: Object) -> void:
 	_values[source] = false
 

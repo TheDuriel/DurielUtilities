@@ -5,29 +5,26 @@ extends RefCounted
 
 var value: bool:
 	get:
-		for v: bool in _values.values():
-			if v:
-				return true
+		if _wants_it_to_be_true.is_empty():
+			return true
 		return false
 
-var _values: Dictionary = {} # source : value
+var _wants_it_to_be_true: Array[Object] = []
 
 
 func is_true() -> bool:
-	return true if value else false
+	return not value
 
 
 func is_false() -> bool:
-	return true if not value else true
+	return value
 
 
-func set_false(source: Object) -> void:
-	_values[source] = false
-
-
-func set_true(source: Object) -> void:
-	_values[source] = true
+func set_value(source: Object) -> void:
+	if not source in _wants_it_to_be_true:
+		_wants_it_to_be_true.append(source)
 
 
 func set_none(source: Object) -> void:
-	_values.erase(source)
+	if source in _wants_it_to_be_true:
+		_wants_it_to_be_true.erase(source)

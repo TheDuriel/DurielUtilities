@@ -1,14 +1,15 @@
 class_name UILinkObserver
 extends Node
+# Use UILink.observe() to create this.
 
-var _observer: Object
+var _observer: WeakRef
 var _target: Control
 var _observer_property: String
 var _target_property: String
 
 
 func _init(observer: Object, target_control: Control, property_id: String, observer_property_name: String) -> void:
-	_observer = observer
+	_observer = weakref(observer)
 	_target = target_control
 	_target_property = property_id
 	_observer_property = observer_property_name
@@ -17,11 +18,11 @@ func _init(observer: Object, target_control: Control, property_id: String, obser
 
 
 func _process(_delta: float) -> void:
-	if not _observer:
+	if not _observer.get_ref():
 		queue_free()
 		return
 	if not _target:
 		queue_free()
 		return
 	
-	_observer[_observer_property] = _target[_target_property]
+	_observer.get_ref()[_observer_property] = _target[_target_property]

@@ -18,8 +18,10 @@ func _init(controller: Object, target_control: Control, property_id: String, con
 
 func _process(_delta: float) -> void:
 	if not _controller:
+		queue_free()
 		return
 	if not _target:
+		queue_free()
 		return
 	
 	_target[_target_property] = _controller[_controller_property]

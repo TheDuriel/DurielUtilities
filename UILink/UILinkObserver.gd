@@ -18,8 +18,10 @@ func _init(observer: Object, target_control: Control, property_id: String, obser
 
 func _process(_delta: float) -> void:
 	if not _observer:
+		queue_free()
 		return
 	if not _target:
+		queue_free()
 		return
 	
 	_observer[_observer_property] = _target[_target_property]

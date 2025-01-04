@@ -2,6 +2,10 @@ class_name UILinkObserver
 extends Node
 # Use UILink.observe() to create this.
 
+# I would theoretically be possible to, in some cases, listen to signals
+# instead of checking once per process tick, hovever that would require
+# a lot of custom repeat code I'm way too lazy to write
+
 var _observer: WeakRef
 var _target: Control
 var _observer_property: String

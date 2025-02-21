@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cs2d5j6ih64yl"]
 
-[ext_resource type="Script" path="res://DurielUtilities/ScreenTransition/FadeTransition/FadeTransition.gd" id="1_23li1"]
+[ext_resource type="Script" uid="uid://cwbtmmhbbm3ic" path="res://DurielUtilities/ScreenTransition/FadeTransition/FadeTransition.gd" id="1_23li1"]
 
 [node name="FadeTransition" type="Control" node_paths=PackedStringArray("color_rect")]
 visible = false

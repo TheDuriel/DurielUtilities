@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b88377u1dlrdc"]
 
-[ext_resource type="Script" path="res://DurielUtilities/Popups/Binary/Binary.gd" id="1_gchfo"]
+[ext_resource type="Script" uid="uid://bukgpf1so3154" path="res://DurielUtilities/Popups/Binary/Binary.gd" id="1_gchfo"]
 
 [node name="Binary" type="PanelContainer" node_paths=PackedStringArray("header", "option_a", "option_b")]
 offset_right = 16.0

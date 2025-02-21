@@ -20,7 +20,7 @@ func is_false() -> bool:
 	return not value
 
 
-func set_value(source: Object) -> void:
+func set_false(source: Object) -> void:
 	if not source in _wants_it_to_be_false:
 		_wants_it_to_be_false.append(source)
 

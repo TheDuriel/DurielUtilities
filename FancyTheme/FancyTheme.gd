@@ -11,6 +11,7 @@ extends Theme
 
 @export_category("Fancy Theme")
 @export var enable_materials: bool = true
+@export var override_existing_materials: bool = false
 @export var material_associations: Dictionary = {} # Control Type : Material
 
 
@@ -51,6 +52,9 @@ func _recursively_set_the_materials(scene_tree: SceneTree) -> void:
 
 func _apply_material(node: Node) -> void:
 	if not node is Control:
+		return
+	
+	if not override_existing_materials and node.material:
 		return
 	
 	# This only works if get_class is defined or it is a built in node.

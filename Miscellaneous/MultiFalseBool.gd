@@ -3,7 +3,7 @@ extends RefCounted
 
 # Will return FALSE if ANY source wants this value to be false.
 
-var value: bool:
+var _value: bool:
 	get:
 		if _wants_it_to_be_false.is_empty():
 			return false
@@ -13,11 +13,11 @@ var _wants_it_to_be_false: Array[Object] = []
 
 
 func is_true() -> bool:
-	return value
+	return _value
 
 
 func is_false() -> bool:
-	return not value
+	return not _value
 
 
 func set_false(source: Object) -> void:

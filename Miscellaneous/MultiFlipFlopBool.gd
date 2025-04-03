@@ -6,41 +6,18 @@ extends RefCounted
 signal became_true
 signal became_false
 
-var _true_setters: Array[Object] = []:
-	set(value):
-		_true_setters = value
-		_calculate_value()
-var _false_setters: Array[Object] = []:
-	set(value):
-		_false_setters = value
-		_calculate_value()
+var _true_setters: Array[Object] = []
+var _false_setters: Array[Object] = []
 
 var _cached_value: bool = false
 
 
-func _calculate_value() -> void:
-	var old_value: bool = _cached_value
-	var new_value: bool = false
-	if _true_setters.size() > _false_setters.size():
-		new_value = true
-	
-	if old_value == new_value:
-		return
-	
-	_cached_value = new_value
-	
-	if _cached_value:
-		became_true.emit()
-	else:
-		became_false.emit()
-
-
 func is_true() -> bool:
-	return _cached_value
+	return true if _cached_value else false
 
 
 func is_false() -> bool:
-	return _cached_value
+	return false if _cached_value else true
 
 
 func set_false(source: Object) -> void:
@@ -62,3 +39,19 @@ func set_none(source: Object) -> void:
 		_false_setters.erase(source)
 	if source in _true_setters:
 		_true_setters.erase(source)
+
+func _update() -> void:
+	var old_value: bool = _cached_value
+	var new_value: bool = false
+	if _true_setters.size() > _false_setters.size():
+		new_value = true
+	
+	if old_value == new_value:
+		return
+	
+	_cached_value = new_value
+	
+	if _cached_value:
+		became_true.emit()
+	else:
+		became_false.emit()

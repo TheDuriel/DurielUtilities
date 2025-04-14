@@ -69,6 +69,10 @@ func get_count() -> int:
 	return _resources_paths.size()
 
 
+func get_names() -> Array[String]:
+	return _resources_paths.keys()
+
+
 static func remove_remap(file_path: String) -> String:
 	if file_path.ends_with(REMAP_EXTENSION):
 		return file_path.replace(REMAP_EXTENSION, "")

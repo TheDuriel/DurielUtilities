@@ -32,7 +32,7 @@ func _init(directory: String, file_extensions: Array[String], load_external: boo
 func _load_resources_from_inside_pck() -> void:
 	var resource_paths: PackedStringArray = FileFinder.find(_directory, _extensions)
 	for path: String in resource_paths:
-		var resource_id: String = path.get_file().get_basename()
+		var resource_id: String = path.get_file().get_basename().to_lower()
 		_resources_paths[resource_id] = path
 		if _cache_mode == CACHE_MODE.PRELOAD:
 			_resources_instances[resource_id] = load(path)
@@ -42,17 +42,19 @@ func _load_resources_next_to_binary() -> void:
 	var external_dir: String = _directory.replace(RES_PATH, DOT_PATH)
 	var resource_paths: PackedStringArray = FileFinder.find(external_dir, _extensions)
 	for path: String in resource_paths:
-		var resource_id: String = path.get_file().get_basename()
+		var resource_id: String = path.get_file().get_basename().to_lower()
 		_resources_paths[resource_id] = path
 		if _cache_mode == CACHE_MODE.PRELOAD:
 			_resources_instances[resource_id] = load(path)
 
 
 func has_resource(name: String) -> bool:
+	name = name.to_lower()
 	return name in _resources_paths
 
 
 func get_resource(name: String) -> Resource:
+	name = name.to_lower()
 	assert(has_resource(name))
 	
 	if _resources_instances.has(name):

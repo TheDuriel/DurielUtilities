@@ -20,3 +20,17 @@ extends Node
 
 #func get_actor_template(file_name_without_extension: String) -> NemetonActorTemplate:
 	#return _actor_templates.get_resource(file_name_without_extension) as NemetonActorTemplate
+
+
+#func get_actor_template_async(file_name_without_extension: String) -> ResourcePromise:
+	#return _actor_templates.get_resource_async(file_name_without_extension)
+
+# Example use of threaded loading
+
+#func _on_load_actor_pressed() -> void:
+	#var promise: ResourcePromise = Content.get_actor_template_async("Ramina")
+	#var status: ResourcePromise.STATUS = await promise.loading_finished
+	#if status == ResourcePromise.STATUS.OK:
+		#var template: ActorTemplate = promise.resource as ActorTemplate
+	#else:
+		#Logger.error(self, _on_load_actor_pressed, "Actor %s not found." % promise.resource_path)

@@ -16,13 +16,22 @@ var _resources_paths: Dictionary[String, String] = {}
 var _resources_instances: Dictionary[String, Resource] = {}
 var _load_external: bool = false
 var _cache_mode: CACHE_MODE = CACHE_MODE.NONE
+var _use_sub_threads: bool = false
 
 
-func _init(directory: String, file_extensions: Array[String], load_external: bool = false, cache_mode: CACHE_MODE = CACHE_MODE.NONE) -> void:
+func _init( # I hate this formatting. But it's needed.
+			directory: String,
+			file_extensions: Array[String],
+			load_external: bool = false,
+			cache_mode: CACHE_MODE = CACHE_MODE.NONE,
+			use_sub_threads: bool = false
+			) -> void:
+	
 	_directory = directory
 	_extensions = file_extensions
 	_load_external = load_external
 	_cache_mode = cache_mode
+	_use_sub_threads = use_sub_threads
 	
 	_load_resources_from_inside_pck()
 	if _load_external:
@@ -67,12 +76,36 @@ func get_resource(name: String) -> Resource:
 	return resource
 
 
+func get_resource_async(name: String) -> ResourcePromise:
+	name = name.to_lower()
+	assert(has_resource(name))
+	
+	if _resources_instances.has(name):
+		# Create a promise that does not need to do any loading.
+		var promise: ResourcePromise = ResourcePromise.new(name, _resources_paths[name], false)
+		promise.resource = _resources_instances[name]
+		promise.loading_finished.emit.call_deferred()
+		return promise
+	
+	var delayed_promise: ResourcePromise = ResourcePromise.new(name, _resources_paths[name])
+	
+	if _cache_mode == CACHE_MODE.KEEP:
+		delayed_promise.loading_finished.connect(_on_promise_loading_finished.bind(delayed_promise), CONNECT_ONE_SHOT)
+	
+	return delayed_promise
+
+
 func get_count() -> int:
 	return _resources_paths.size()
 
 
 func get_names() -> Array[String]:
 	return _resources_paths.keys()
+
+
+# Only called with cache mode keep
+func _on_promise_loading_finished(promise: ResourcePromise) -> void:
+	_resources_instances[promise.resource_id] = promise.resource
 
 
 static func remove_remap(file_path: String) -> String:

@@ -104,8 +104,9 @@ func get_names() -> Array[String]:
 
 
 # Only called with cache mode keep
-func _on_promise_loading_finished(promise: ResourcePromise) -> void:
-	_resources_instances[promise.resource_id] = promise.resource
+func _on_promise_loading_finished(status: ResourcePromise.STATUS, promise: ResourcePromise) -> void:
+	if status == ResourcePromise.STATUS.OK:
+		_resources_instances[promise.resource_id] = promise.resource
 
 
 static func remove_remap(file_path: String) -> String:

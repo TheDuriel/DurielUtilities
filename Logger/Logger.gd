@@ -5,7 +5,7 @@ extends RefCounted
 ## Provides pretty print logging in a static fashion.
 
 
-const APP_CONFIG: LoggerConfig = preload("res://logger_config.tres")
+const APP_CONFIG: LoggerConfig = preload("res://Config/logger_config.tres")
 
 
 ## Confirms are green. A confirm informs you a function was called, and was successful.

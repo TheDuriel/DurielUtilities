@@ -1,7 +1,7 @@
 class_name ResourcePromise
 extends RefCounted
 
-signal loading_finished(status: ResourceLoader.ThreadLoadStatus)
+signal loading_finished(status: STATUS)
 
 enum STATUS {NONE, OK, FAILED}
 

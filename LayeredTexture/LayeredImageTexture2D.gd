@@ -1,8 +1,12 @@
 @tool
 class_name LayeredImageTexture2D
-
 extends ImageTexture
 
+@export_group("Export")
+@export_tool_button("Save .png") var save_png_button: Callable = save_png
+@export_tool_button("Bake") var bake_button: Callable = _bake
+
+@export_group("Settings")
 @export var size: Vector2i = Vector2i(100, 100):
 	set(value):
 		size = value
@@ -23,6 +27,7 @@ enum BASE_MODE {COLOR, TEXTURE}
 		base_texture = value
 		_bake()
 
+@export_group("Layers")
 @export var layers: Array[TextureLayer] = []:
 	set(value):
 		for layer: TextureLayer in layers:
@@ -41,7 +46,6 @@ func _init() -> void:
 		# This is a very naive check, but should avoid most error cases.
 		if get_height() == size.y:
 			return
-		
 	
 	_bake()
 
@@ -177,3 +181,25 @@ func _get_layer_image(layer: TextureLayer) -> Image:
 			image.set_pixel(x, y, new_col)
 	
 	return image
+
+
+func save_png() -> void:
+	_bake()
+	
+	var target_path: String = resource_path
+	
+	if not target_path:
+		print("LayeredImageTexture must first be saved as .tres or .res.")
+		return
+	
+	if target_path.ends_with(".tres"):
+		target_path = target_path.replace(".tres", ".png")
+	if target_path.ends_with(".res"):
+		target_path = target_path.replace(".res", ".png")
+	print("Trying to save LayeredImageTexture as baked .png to %s" % target_path)
+	
+	var error: int = get_image().save_png(target_path)
+	if not error == OK:
+		print("Saving failed with error %" % error)
+	else:
+		print("Done, please tab out of the editor to reload the File Dock. >.<")

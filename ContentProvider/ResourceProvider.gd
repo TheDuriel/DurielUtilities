@@ -84,7 +84,7 @@ func get_resource_async(name: String) -> ResourcePromise:
 		# Create a promise that does not need to do any loading.
 		var promise: ResourcePromise = ResourcePromise.new(name, _resources_paths[name], false)
 		promise.resource = _resources_instances[name]
-		promise.loading_finished.emit.call_deferred()
+		promise.loading_finished.emit.call_deferred(ResourcePromise.STATUS.OK)
 		return promise
 	
 	var delayed_promise: ResourcePromise = ResourcePromise.new(name, _resources_paths[name])

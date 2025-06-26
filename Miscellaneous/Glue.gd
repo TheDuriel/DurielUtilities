@@ -1,5 +1,20 @@
 class_name Glue
 extends RefCounted
+# A library of Setter/Getter function helpers
+# Most of these allow for the connection of signals to functionsd
+# Or implement data binding patterns
+
+
+#region Validation Glue
+
+# Example use:
+#var foo: Type = value:
+	#set(value): foo = Glue.assert_value(value)
+
+static func assert_value(value: Variant) -> Variant:
+	assert(value)
+	return value
+
 
 #region Var Setter Glue
 

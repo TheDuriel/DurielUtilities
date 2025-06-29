@@ -17,6 +17,10 @@ var _active_state: SimpleState = SimpleStateNone.new()
 	#_enter_state(new_state)
 
 
+func _enter_state_deferred(new_state: SimpleState) -> void:
+	_enter_state.call_deferred(new_state)
+
+
 func _enter_state(new_state: SimpleState) -> void:
 	if not _active_state.can_exit_to(new_state):
 		Logger.error(self, _enter_state, "Current state can't exit to new state.")

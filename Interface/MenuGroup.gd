@@ -1,0 +1,57 @@
+class_name MenuGroup
+extends Control
+
+@export var _focus_target: Control:
+	set(value): _focus_target = Glue.assert_value(value)
+@export var _submenu_container: Container:
+	set(value): _submenu_container = Glue.assert_value(value)
+@export var _submenu_button_container: VBoxContainer:
+	set(value): _submenu_button_container = Glue.assert_value(value)
+
+var _submenus: Array[SubMenu] = []
+var _submenu_buttons: Array[Button] = []
+var _button_group: ButtonGroup = ButtonGroup.new()
+var _current_menu: SubMenu
+
+
+func _ready() -> void:
+	_find_submenus()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_VISIBILITY_CHANGED:
+		if is_visible_in_tree():
+			_focus_target.grab_click_focus()
+			_focus_target.grab_focus()
+
+
+func _find_submenus() -> void:
+	for child: Node in _submenu_container.get_children():
+		if child is SubMenu:
+			_add_submenu(child)
+
+
+func _add_submenu(sm: SubMenu) -> void:
+	_submenus.append(sm)
+	var b: Button = Button.new()
+	b.name = sm.menu_name
+	b.button_group = _button_group
+	b.toggle_mode = true
+	b.pressed.connect(_on_submenu_button_pressed.bind(sm), CONNECT_DEFERRED)
+	_submenu_buttons.append(b)
+	_submenu_button_container.add_child(sm)
+
+
+func _on_submenu_button_pressed(sm: SubMenu) -> void:
+	_change_menu(sm)
+
+
+func _change_menu(sm: SubMenu) -> void:
+	if _current_menu:
+		_current_menu.open = false
+		await _current_menu.closed_animated
+	
+	_current_menu = sm
+	
+	if _current_menu:
+		_current_menu.open = true

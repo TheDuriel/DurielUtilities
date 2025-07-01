@@ -3,7 +3,7 @@ extends RefCounted
 
 
 static func kill(tween: Tween) -> Variant:
-	if tween and tween.is_valid() or tween.is_running():
+	if tween and (tween.is_valid() or tween.is_running()):
 		tween.kill()
 	return null
 

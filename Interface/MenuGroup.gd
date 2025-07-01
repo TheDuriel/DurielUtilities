@@ -7,7 +7,10 @@ extends Control
 	set(value): _submenu_container = Glue.assert_value(value)
 @export var _submenu_button_container: VBoxContainer:
 	set(value): _submenu_button_container = Glue.assert_value(value)
+
+@export_group("Button Style")
 @export var _submenu_button_theme_type_variation: String
+@export var _submenu_button_alignment: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT
 
 var _submenus: Array[SubMenu] = []
 var _submenu_buttons: Array[Button] = []
@@ -38,6 +41,8 @@ func _add_submenu(sub_menu: SubMenu) -> void:
 	_submenus.append(sub_menu)
 	var b: Button = Button.new()
 	b.name = sub_menu.menu_name
+	b.text = sub_menu.menu_name
+	b.alignment = _submenu_button_alignment
 	b.theme_type_variation = _submenu_button_theme_type_variation
 	b.button_group = _button_group
 	b.toggle_mode = true
@@ -51,6 +56,9 @@ func _on_submenu_button_pressed(sm: SubMenu) -> void:
 
 
 func _change_menu(sm: SubMenu) -> void:
+	if _current_menu == sm:
+		return
+	
 	if _current_menu:
 		_current_menu.open = false
 		await _current_menu.closed_animated

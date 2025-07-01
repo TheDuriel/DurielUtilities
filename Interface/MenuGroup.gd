@@ -34,16 +34,16 @@ func _find_submenus() -> void:
 			_add_submenu(child)
 
 
-func _add_submenu(sm: SubMenu) -> void:
-	_submenus.append(sm)
+func _add_submenu(sub_menu: SubMenu) -> void:
+	_submenus.append(sub_menu)
 	var b: Button = Button.new()
-	b.name = sm.menu_name
+	b.name = sub_menu.menu_name
 	b.theme_type_variation = _submenu_button_theme_type_variation
 	b.button_group = _button_group
 	b.toggle_mode = true
-	b.pressed.connect(_on_submenu_button_pressed.bind(sm), CONNECT_DEFERRED)
+	b.pressed.connect(_on_submenu_button_pressed.bind(sub_menu), CONNECT_DEFERRED)
 	_submenu_buttons.append(b)
-	_submenu_button_container.add_child(sm)
+	_submenu_button_container.add_child(b)
 
 
 func _on_submenu_button_pressed(sm: SubMenu) -> void:

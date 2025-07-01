@@ -21,7 +21,9 @@ func _ready() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_VISIBILITY_CHANGED:
-		if is_visible_in_tree():
+		if not _focus_target.is_inside_tree():
+			return
+		if _focus_target.is_visible_in_tree():
 			_focus_target.grab_click_focus()
 			_focus_target.grab_focus()
 

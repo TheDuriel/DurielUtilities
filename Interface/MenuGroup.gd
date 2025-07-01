@@ -7,6 +7,7 @@ extends Control
 	set(value): _submenu_container = Glue.assert_value(value)
 @export var _submenu_button_container: VBoxContainer:
 	set(value): _submenu_button_container = Glue.assert_value(value)
+@export var _submenu_button_theme_type_variation: String
 
 var _submenus: Array[SubMenu] = []
 var _submenu_buttons: Array[Button] = []
@@ -35,6 +36,7 @@ func _add_submenu(sm: SubMenu) -> void:
 	_submenus.append(sm)
 	var b: Button = Button.new()
 	b.name = sm.menu_name
+	b.theme_type_variation = _submenu_button_theme_type_variation
 	b.button_group = _button_group
 	b.toggle_mode = true
 	b.pressed.connect(_on_submenu_button_pressed.bind(sm), CONNECT_DEFERRED)

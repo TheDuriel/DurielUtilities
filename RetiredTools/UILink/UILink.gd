@@ -1,4 +1,4 @@
-class_name UILink
+#class_name UILink
 extends RefCounted
 ## UILink
 ##

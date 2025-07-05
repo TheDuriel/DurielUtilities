@@ -1,4 +1,4 @@
-class_name UILinkController
+#class_name UILinkController
 extends Node
 # Use UILink.control() to create this.
 

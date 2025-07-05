@@ -1,4 +1,4 @@
-class_name UILinkObserver
+#class_name UILinkObserver
 extends Node
 # Use UILink.observe() to create this.
 

@@ -2,6 +2,7 @@ class_name TaskQueue
 extends RefCounted
 
 signal task_queued(task: Task)
+signal task_waited(task: Task)
 signal task_readied(task: Task)
 signal task_completed(task: Task)
 signal task_failed(task: Task)
@@ -89,6 +90,7 @@ func _insert_task_at(task: Task, index: int) -> void:
 	else:
 		_tasks.insert(index, task)
 	
+	task.waited.connect(_on_task_waited)
 	task.readied.connect(_on_task_readied)
 	task.completed.connect(_on_task_completed)
 	task.failed.connect(_on_task_failed)
@@ -133,6 +135,18 @@ func _ready_tasks() -> void:
 		return
 	
 	Logger.hint(self, _ready_tasks, "failed. First task is %s" % first_task.state)
+
+
+func _on_task_waited(task: Task) -> void:
+	if slow_mode:
+		await _tree.create_timer(slow_mode_wait_time).timeout
+	
+	if task.is_async() or task == _tasks[0]:
+		await Engine.get_main_loop().process_frame
+		
+		task.prepare.call_deferred()
+	
+	task_waited.emit(task)
 
 
 func _on_task_readied(task: Task) -> void:

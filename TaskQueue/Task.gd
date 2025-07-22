@@ -1,6 +1,7 @@
 class_name Task
 extends RefCounted
 
+signal waited(task: Task)
 signal readied(task: Task)
 signal completed(task: Task)
 signal failed(task: Task)
@@ -65,6 +66,7 @@ func set_state(new_state: int) -> void:
 		STATE.WAITING:
 			_state = STATE.WAITING
 			Logger.hint(self, set_state, "waiting")
+			waited.emit(self)
 		STATE.READY:
 			_state = STATE.READY
 			Logger.hint(self, set_state, "ready")

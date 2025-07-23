@@ -57,19 +57,25 @@ func _apply_material(node: Node) -> void:
 	if not override_existing_materials and node.material:
 		return
 	
+	var c: Control = node as Control
+	var target_material: Material
+	
 	# This only works if get_class is defined or it is a built in node.
-	var node_class: String = node.get_class()
+	var node_class: String = c.get_class()
+	if node_class in material_associations:
+		target_material = material_associations[node_class]
 	# This only works if the node has a script, returns get_class() otherwise.
-	var node_file_name: String = Logger.get_object_file_name(node)
+	var node_file_name: String = Logger.get_object_file_name(c)
+	if node_file_name in material_associations:
+		target_material = material_associations[node_file_name]
 	# This only works if the node wasn't renamed, or has a number suffix.
-	var node_name: String = node.name
+	var node_name: String = c.name
+	if node_name in material_associations:
+		target_material = material_associations[node_name]
+	# This is the preferred way and will override the rest.
+	var node_type_variant: String = c.theme_type_variation
+	if node_type_variant in material_associations:
+		target_material = material_associations[node_type_variant]
 	
-	var possible_names: Array[String] = []
-	if node_class: possible_names.append(node_class)
-	if node_file_name: possible_names.append(node_file_name)
-	if node_name: possible_names.append(node_name)
-	
-	for name: String in possible_names:
-		if name in material_associations:
-			node.material = material_associations[name]
-			return
+	if target_material:
+		node.material = target_material

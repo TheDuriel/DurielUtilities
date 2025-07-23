@@ -64,6 +64,18 @@ static func int_clamped(value: int, min_value: int, max_value: int, changed_sign
 	return r
 
 
+#region Signal Helper
+
+# Simple helper for completely dissconnecting a signal
+# Without the need to know if it had any connections to begin with
+
+static func disconnect_all(a_signal: Signal) -> void:
+	var c: Array[Dictionary] = a_signal.get_connections()
+	for entry: Dictionary in c:
+		var target: Callable = entry.callable
+		a_signal.disconnect(target)
+
+
 #region Control Node Signal Glue
 
 # Example use:

@@ -8,7 +8,7 @@ extends RefCounted
 #region Validation Glue
 
 # Example use:
-#var foo: Type = value:
+#@export var foo: Control = value:
 	#set(value): foo = Glue.assert_value(value)
 
 static func assert_value(value: Variant) -> Variant:

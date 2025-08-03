@@ -17,7 +17,7 @@ var slow_mode_wait_time: float = 0.15
 
 # True if the queue is working. Useful for blocking user input until its done.
 var busy: bool:
-	get: return _tasks.is_empty()
+	get: return not _tasks.is_empty()
 
 var _tree: SceneTree
 var _tasks: Array[Task] = []

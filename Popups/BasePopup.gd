@@ -9,4 +9,4 @@ signal closed
 ## You should statically type the override.
 @warning_ignore("untyped_declaration", "unused_parameter")
 func set_config(value) -> void:
-	Logger.warn(self, set_config, "You didn't override this.")
+	DurielLogger.warn(self, set_config, "You didn't override this.")

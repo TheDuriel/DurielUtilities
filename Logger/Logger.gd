@@ -1,4 +1,4 @@
-class_name Logger
+class_name DurielLogger
 extends RefCounted
 ## Static Logger
 ##

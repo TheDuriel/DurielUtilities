@@ -65,19 +65,19 @@ func set_state(new_state: int) -> void:
 			pass
 		STATE.WAITING:
 			_state = STATE.WAITING
-			Logger.hint(self, set_state, "waiting")
+			DurielLogger.hint(self, set_state, "waiting")
 			waited.emit(self)
 		STATE.READY:
 			_state = STATE.READY
-			Logger.hint(self, set_state, "ready")
+			DurielLogger.hint(self, set_state, "ready")
 			readied.emit(self)
 		STATE.COMPLETED:
 			_state = STATE.COMPLETED
-			Logger.hint(self, set_state, "completed")
+			DurielLogger.hint(self, set_state, "completed")
 			completed.emit(self)
 		STATE.FAILED:
 			_state = STATE.FAILED
-			Logger.hint(self, set_state, "failed")
+			DurielLogger.hint(self, set_state, "failed")
 			failed.emit(self)
 
 

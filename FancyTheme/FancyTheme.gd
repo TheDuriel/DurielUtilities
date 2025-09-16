@@ -65,7 +65,7 @@ func _apply_material(node: Node) -> void:
 	if node_class in material_associations:
 		target_material = material_associations[node_class]
 	# This only works if the node has a script, returns get_class() otherwise.
-	var node_file_name: String = Logger.get_object_file_name(c)
+	var node_file_name: String = DurielLogger.get_object_file_name(c)
 	if node_file_name in material_associations:
 		target_material = material_associations[node_file_name]
 	# This only works if the node wasn't renamed, or has a number suffix.

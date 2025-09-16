@@ -71,7 +71,7 @@ func _bake() -> void:
 			if image.is_compressed():
 				var error: int = image.decompress()
 				if not error == OK:
-					Logger.warn(self, _bake, "Could not decompress base texture. Failed bake.")
+					DurielLogger.warn(self, _bake, "Could not decompress base texture. Failed bake.")
 					return
 			
 			image.resize(size.x, size.y)
@@ -105,7 +105,7 @@ func _blend_layer(image: Image, layer: TextureLayer) -> Image:
 		if error == OK:
 			blend_image.resize(base_size.x, base_size.y, Image.INTERPOLATE_BILINEAR)
 		else:
-			Logger.warn(self, _blend_layer, "Could not resize compressed blend. Skipping.")
+			DurielLogger.warn(self, _blend_layer, "Could not resize compressed blend. Skipping.")
 	
 	image = Image.create(
 				base_size.x, base_size.y,
@@ -127,7 +127,7 @@ func _blend_layer(image: Image, layer: TextureLayer) -> Image:
 
 func _get_layer_image(layer: TextureLayer) -> Image:
 	if not layer.texture:
-		Logger.warn(self, _get_layer_image, "No texture set in layer.")
+		DurielLogger.warn(self, _get_layer_image, "No texture set in layer.")
 		return null
 	
 	var base_image: Image = layer.texture.get_image()
@@ -147,7 +147,7 @@ func _get_layer_image(layer: TextureLayer) -> Image:
 		if error == OK:
 			mask_image.resize(base_size.x, base_size.y, Image.INTERPOLATE_BILINEAR)
 		else:
-			Logger.warn(self, _get_layer_image, "Could not resize compressed mask. Skipping.")
+			DurielLogger.warn(self, _get_layer_image, "Could not resize compressed mask. Skipping.")
 	
 	var image: Image = Image.create(
 				base_size.x, base_size.y,

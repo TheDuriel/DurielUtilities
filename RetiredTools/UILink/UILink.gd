@@ -44,15 +44,15 @@ extends RefCounted
 ### observer_property_name = the name of the property that will be set when target property changes
 #static func observe(observer: Object, target_control: Control, target_property_name: String, observer_property_name: String) -> UILinkObserver:
 	#if not observer_property_name in observer:
-		#Logger.warn(observer, observe, "Property %s does not exist in object %s" % [observer_property_name, observer])
+		#DurielLogger.warn(observer, observe, "Property %s does not exist in object %s" % [observer_property_name, observer])
 		#return null
 	#if not target_property_name in target_control:
-		#Logger.warn(observer, observe, "Property %s does not exist in target %s" % [target_property_name, target_control])
+		#DurielLogger.warn(observer, observe, "Property %s does not exist in target %s" % [target_property_name, target_control])
 		#return null
 	#
 	#var types: Array[int] = [typeof(target_control[target_property_name]), typeof(observer[observer_property_name])]
 	#if not types[0] == types[1]:
-		#Logger.warn(observer, observe, "Target property type %s does not match observer property type %s" % types)
+		#DurielLogger.warn(observer, observe, "Target property type %s does not match observer property type %s" % types)
 		#return null
 	#
 	#var uilo: UILinkObserver = UILinkObserver.new(observer, target_control, target_property_name, observer_property_name)
@@ -67,15 +67,15 @@ extends RefCounted
 ### controller_property_name = the name of the property of the controller that will be set to the target
 #static func control(controller: Object, target_control: Control, target_property_name: String, controller_property_name: String) -> UILinkController:
 	#if not controller_property_name in controller:
-		#Logger.warn(controller, observe, "Property %s does not exist in object %s" % [controller_property_name, controller])
+		#DurielLogger.warn(controller, observe, "Property %s does not exist in object %s" % [controller_property_name, controller])
 		#return null
 	#if not target_property_name in target_control:
-		#Logger.warn(controller, observe, "Property %s does not exist in target %s" % [target_property_name, target_control])
+		#DurielLogger.warn(controller, observe, "Property %s does not exist in target %s" % [target_property_name, target_control])
 		#return null
 	#
 	#var types: Array[int] = [typeof(target_control[target_property_name]), typeof(controller[controller_property_name])]
 	#if not types[0] == types[1]:
-		#Logger.warn(controller, observe, "Target property type %s does not match controller property type %s" % types)
+		#DurielLogger.warn(controller, observe, "Target property type %s does not match controller property type %s" % types)
 		#return null
 	#
 	#var uilc: UILinkController = UILinkController.new(controller, target_control, target_property_name, controller_property_name)

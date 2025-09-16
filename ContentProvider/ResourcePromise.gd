@@ -38,11 +38,11 @@ func _on_process_frame() -> void:
 	
 	match _status:
 		ResourceLoader.ThreadLoadStatus.THREAD_LOAD_INVALID_RESOURCE:
-			Logger.error(self, _on_process_frame, "Resource %s does not exist." % resource_path)
+			DurielLogger.error(self, _on_process_frame, "Resource %s does not exist." % resource_path)
 		ResourceLoader.ThreadLoadStatus.THREAD_LOAD_IN_PROGRESS:
 			stop = false
 		ResourceLoader.ThreadLoadStatus.THREAD_LOAD_FAILED:
-			Logger.error(self, _on_process_frame, "Resource %s failed to load." % resource_path)
+			DurielLogger.error(self, _on_process_frame, "Resource %s failed to load." % resource_path)
 		ResourceLoader.ThreadLoadStatus.THREAD_LOAD_LOADED:
 			resource = ResourceLoader.load_threaded_get(resource_path)
 	

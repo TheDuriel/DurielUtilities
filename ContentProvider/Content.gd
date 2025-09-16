@@ -15,7 +15,7 @@ extends Node
 
 
 #func _init() -> void:
-	#Logger.hint(self, _init, "Loaded %s ActorTemplates" % _actor_templates.get_count())
+	#DurielLogger.hint(self, _init, "Loaded %s ActorTemplates" % _actor_templates.get_count())
 
 
 #func get_actor_template(file_name_without_extension: String) -> NemetonActorTemplate:
@@ -33,4 +33,4 @@ extends Node
 	#if status == ResourcePromise.STATUS.OK:
 		#var template: ActorTemplate = promise.resource as ActorTemplate
 	#else:
-		#Logger.error(self, _on_load_actor_pressed, "Actor %s not found." % promise.resource_path)
+		#DurielLogger.error(self, _on_load_actor_pressed, "Actor %s not found." % promise.resource_path)

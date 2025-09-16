@@ -29,7 +29,7 @@ func _init(tree: SceneTree) -> void:
 
 func flush_manually() -> void:
 	if not require_manual_flushing:
-		Logger.warn(self, flush_manually, "require_manual_flushing is not true")
+		DurielLogger.warn(self, flush_manually, "require_manual_flushing is not true")
 		return
 	
 	_ready_tasks.call_deferred()
@@ -100,16 +100,16 @@ func _insert_task_at(task: Task, index: int) -> void:
 	
 	task_queued.emit(task)
 	
-	Logger.hint(self, _insert_task_at, Logger.get_object_file_name(task) + " - queue size: %s" % _tasks.size())
+	DurielLogger.hint(self, _insert_task_at, DurielLogger.get_object_file_name(task) + " - queue size: %s" % _tasks.size())
 
 
 func _ready_tasks() -> void:
 	if slow_mode:
 		await _tree.create_timer(slow_mode_wait_time).timeout
 	
-	Logger.hint(self, _ready_tasks)
+	DurielLogger.hint(self, _ready_tasks)
 	if _tasks.is_empty():
-		Logger.hint(self, _ready_tasks, "nothing to ready.")
+		DurielLogger.hint(self, _ready_tasks, "nothing to ready.")
 		queue_finished.emit()
 		return
 	
@@ -118,23 +118,23 @@ func _ready_tasks() -> void:
 		if t.is_async() and t.state == Task.STATE.NONE:
 			t.prepare.call_deferred()
 	
-	Logger.hint(self, _ready_tasks, "readying async.")
+	DurielLogger.hint(self, _ready_tasks, "readying async.")
 	
 	# First task in list
 	var first_task: Task = _tasks[0]
 	
-	Logger.hint(self, _ready_tasks, "First task is: %s" % Logger.get_object_file_name(first_task))
+	DurielLogger.hint(self, _ready_tasks, "First task is: %s" % DurielLogger.get_object_file_name(first_task))
 	
 	if first_task.is_async():
-		Logger.hint(self, _ready_tasks, "first task is async. Stopped")
+		DurielLogger.hint(self, _ready_tasks, "first task is async. Stopped")
 		return
 	
 	if first_task.state <= Task.STATE.WAITING:
 		first_task.prepare.call_deferred()
-		Logger.hint(self, _ready_tasks, "readied first task.")
+		DurielLogger.hint(self, _ready_tasks, "readied first task.")
 		return
 	
-	Logger.hint(self, _ready_tasks, "failed. First task is %s" % first_task.state)
+	DurielLogger.hint(self, _ready_tasks, "failed. First task is %s" % first_task.state)
 
 
 func _on_task_waited(task: Task) -> void:

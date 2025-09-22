@@ -69,7 +69,10 @@ static func error(emitter: Object, function: Callable, message = "") -> void:
 	
 	if APP_CONFIG and APP_CONFIG.assert_errors:
 		# Read the error and follow the stack trace to find your problem!
-		assert(false)
+		if Engine.is_editor_hint():
+			print_stack()
+		else:
+			assert(false)
 
 
 static func _get_message(emitter: Object, function: Callable, message: String = "") -> String:

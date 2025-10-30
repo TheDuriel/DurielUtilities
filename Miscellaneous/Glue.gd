@@ -4,6 +4,17 @@ extends RefCounted
 # Most of these allow for the connection of signals to functionsd
 # Or implement data binding patterns
 
+#region Readonly Glue
+
+# Example use:
+#var foo: Bar: # ReadOnly Property
+	#set(value): Glue.readonly()
+	#get: return _foo
+#var _foo: Bar # Field
+
+static func readonly() -> void:
+	assert(false, "Tried to assign to ReadOnly property. Use the provided setter, if any.")
+
 
 #region Validation Glue
 
@@ -12,7 +23,7 @@ extends RefCounted
 	#set(value): foo = Glue.assert_value(value)
 
 static func assert_value(value: Variant) -> Variant:
-	assert(value)
+	assert(not value == null, "Tried to assign Null to property that must not be null.")
 	return value
 
 
@@ -124,7 +135,7 @@ static func connect_mouse_exited(old: Control, new: Control, target_func: Callab
 
 
 static func bind_property(property: String, target: Object, data_signal: Signal) -> void:
-	assert(property in target)
+	assert(property in target, "Named property does not exist in target.")
 	
 	var connection_id: String = "%s_%s_%s" % [property, data_signal.get_object_id(), data_signal.get_name()]
 	
@@ -138,7 +149,7 @@ static func bind_property(property: String, target: Object, data_signal: Signal)
 
 
 static func unbind_property(property: String, target: Object, data_signal: Signal) -> void:
-	assert(property in target)
+	assert(property in target, "Named property does not exist in target.")
 	
 	var connection_id: String = "%s_%s_%s" % [property, data_signal.get_object_id(), data_signal.get_name()]
 	

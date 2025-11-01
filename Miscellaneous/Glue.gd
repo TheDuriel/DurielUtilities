@@ -165,3 +165,16 @@ static func unbind_property(property: String, target: Object, data_signal: Signa
 
 static func _bind(property: String, target: Object, new_text: String) -> void:
 	target[property] = new_text
+
+
+#region Easy Initialization Glue
+# Adds a child node, and returns it on the same line.
+
+# Example use
+#var foo: Bar = Glue.init_add_child(Bar.new(), self)
+
+static func init_add_child(node: Node, owner: Node, child_name: String = "") -> Node:
+	owner.add_child(node)
+	if child_name:
+		node.name = child_name
+	return node

@@ -1,5 +1,5 @@
 class_name MenuGroup
-extends Control
+extends UIScene
 
 @export var _focus_target: Control:
 	set(value): _focus_target = Glue.assert_value(value)
@@ -19,6 +19,7 @@ var _current_menu: SubMenu
 
 
 func _ready() -> void:
+	enter_animation_finished.emit()
 	_find_submenus()
 
 

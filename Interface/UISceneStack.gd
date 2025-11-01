@@ -35,11 +35,16 @@ func stack_scene(scene: UIScene) -> void:
 
 
 func erase_scene(scene: UIScene) -> void:
+	erase_scene_async.call_deferred(scene)
+
+
+func erase_scene_async(scene: UIScene) -> void:
 	if not scene in get_children():
 		DurielLogger.error(self, stack_scene, "Scene not in stack.")
 		return
 	
-	scene.free_scene()
+	scene.free_scene.call_deferred()
+	await scene.exit_animation_finished
 	
 	var children: Array[Node] = get_children()
 	children.reverse()
@@ -53,4 +58,3 @@ func erase_scene(scene: UIScene) -> void:
 		if is_instance_valid(scene):
 			scene.unsuspend(self)
 			break
-		

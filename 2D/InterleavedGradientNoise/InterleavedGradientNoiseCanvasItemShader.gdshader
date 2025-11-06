@@ -1,6 +1,9 @@
 shader_type canvas_item;
 render_mode blend_mix;
 
+// Source: http://www.iryoku.com/next-generation-post-processing-in-call-of-duty-advanced-warfare (slide 122)
+const vec3 IGN_MAGIC_NUMBERS = vec3(0.06711056, 0.00583715, 52.9829189);
+
 // Color = Apply IGN to the color channel.
 // This is best for gradient sprites without any alpha information
 // Alpha = Apply IGN to the alpha channel.
@@ -8,11 +11,9 @@ render_mode blend_mix;
 // Both = Apply IGN to color and alpha channels.
 // This should be idea in scenarios where an already color banded gradient is used.
 // And it is then blended with the rest of the screen.
-
-// Source: http://www.iryoku.com/next-generation-post-processing-in-call-of-duty-advanced-warfare (slide 122)
-const vec3 IGN_MAGIC_NUMBERS = vec3(0.06711056, 0.00583715, 52.9829189);
-
 uniform int mode : hint_enum("color", "alpha", "both") = 0;
+
+// Recommended values are between 0.01 and 0.05
 uniform float intensity : hint_range(0.0, 1.0, 0.01) = 0.01;
 
 

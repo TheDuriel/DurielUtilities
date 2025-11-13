@@ -1,8 +1,8 @@
 [gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dq0l81c4nuk7c"]
 
-[ext_resource type="Shader" uid="uid://hirajiitakbl" path="res://App/DurielUtilities/2D/InterleavedGradientNoise/InterleavedGradientNoiseCanvasItemShader.gdshader" id="1_8e0n7"]
+[ext_resource type="Shader" uid="uid://hirajiitakbl" path="res://App/DurielUtilities/2D/InterleavedGradientNoise/InterleavedGradientNoiseCanvasItemShader.gdshader" id="1_2ufld"]
 
 [resource]
-shader = ExtResource("1_8e0n7")
+shader = ExtResource("1_2ufld")
 shader_parameter/mode = 0
-shader_parameter/intensity = 0.00999999977648
+shader_parameter/intensity = 0.01

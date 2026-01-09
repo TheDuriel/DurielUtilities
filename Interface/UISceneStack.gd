@@ -7,6 +7,10 @@ signal scene_added(scene: UIScene)
 @export var full_rect: bool = true
 
 
+func _init() -> void:
+	mouse_filter = Control.MOUSE_FILTER_PASS
+
+
 func _ready() -> void:
 	if full_rect:
 		set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)

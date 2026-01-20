@@ -8,7 +8,7 @@ signal scene_added(scene: UIScene)
 
 
 func _init() -> void:
-	mouse_filter = Control.MOUSE_FILTER_PASS
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 
 func _ready() -> void:

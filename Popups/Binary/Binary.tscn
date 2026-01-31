@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://b88377u1dlrdc"]
+[gd_scene format=3 uid="uid://b88377u1dlrdc"]
 
-[ext_resource type="Script" uid="uid://bukgpf1so3154" path="res://DurielUtilities/Popups/Binary/Binary.gd" id="1_gchfo"]
+[ext_resource type="Script" uid="uid://bukgpf1so3154" path="res://App/DurielUtilities/Popups/Binary/Binary.gd" id="1_gchfo"]
 
-[node name="Binary" type="PanelContainer" node_paths=PackedStringArray("header", "option_a", "option_b")]
+[node name="Binary" type="PanelContainer" unique_id=2118252961 node_paths=PackedStringArray("header", "option_a", "option_b")]
 offset_right = 16.0
 offset_bottom = 16.0
 script = ExtResource("1_gchfo")
@@ -10,20 +10,20 @@ header = NodePath("VBoxContainer/Header")
 option_a = NodePath("VBoxContainer/HBoxContainer/OptionA")
 option_b = NodePath("VBoxContainer/HBoxContainer/OptionB")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=684368321]
 layout_mode = 2
 
-[node name="Header" type="Label" parent="VBoxContainer"]
+[node name="Header" type="Label" parent="VBoxContainer" unique_id=78606199]
 layout_mode = 2
 horizontal_alignment = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=672745412]
 layout_mode = 2
 
-[node name="OptionA" type="Button" parent="VBoxContainer/HBoxContainer"]
+[node name="OptionA" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=759477132]
 custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
 
-[node name="OptionB" type="Button" parent="VBoxContainer/HBoxContainer"]
+[node name="OptionB" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=818633204]
 custom_minimum_size = Vector2(64, 0)
 layout_mode = 2

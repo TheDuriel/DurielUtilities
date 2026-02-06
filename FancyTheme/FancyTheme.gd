@@ -9,7 +9,7 @@ extends Theme
 # This is the same name you would use in the Theme editor
 # Then add a Material value to the Key (select Object, then drag the material in)
 
-@export_category("Fancy Theme")
+@export_group("Fancy Theme")
 @export var enable_materials: bool = true
 @export var override_existing_materials: bool = false
 @export var material_associations: Dictionary = {} # Control Type : Material

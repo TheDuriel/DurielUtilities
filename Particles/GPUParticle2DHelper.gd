@@ -2,7 +2,7 @@
 class_name GPUParticles2DHelper
 extends GPUParticles2D
 
-@export_category("Stats")
+@export_group("Stats")
 ## The amount of particles emitted per second. Equal to ammount / lifetime
 ## This value can not be changed here.
 @export var current_particles_per_second: float:
@@ -13,7 +13,7 @@ extends GPUParticles2D
 @export var current_particle_interval: float:
 	get: return 1.0 / current_particles_per_second
 
-@export_category("Spawn Rate")
+@export_group("Spawn Rate")
 ## The ammount of particles you want to spawn.
 @export var ammount_desired: int = 0
 ## The delay between each individual particle.

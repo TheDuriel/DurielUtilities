@@ -5,7 +5,7 @@ extends Resource
 ## A simple resource which can be loaded in various parts of your app to apply configurations.
 ## The default location is res://app_config.tres.
 
-@export_category("Logging")
+@export_group("Logging")
 @export var log_confirms: bool = false
 @export var log_hints: bool = false
 @export var log_warnings: bool = true

@@ -8,7 +8,7 @@ extends Resource
 		texture = value
 		emit_changed()
 
-@export_category("Blend")
+@export_group("Blend")
 @export var blend_mode: BlendModes.MODE = BlendModes.MODE.NORMAL:
 	set(value):
 		blend_mode = value
@@ -18,7 +18,7 @@ extends Resource
 		blend_value = value
 		emit_changed()
 
-@export_category("Mask")
+@export_group("Mask")
 @export var mask: Texture2D:
 	set(value):
 		mask = value

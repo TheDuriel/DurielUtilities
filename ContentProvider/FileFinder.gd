@@ -11,6 +11,8 @@ extends RefCounted
 ## This search is recursive. Be careful calling it on a deep folder structure.
 ## Directories starting with . are ignored.
 static func find(directory: String, extensions: Array[String]) -> Array[String]:
+	if not DirAccess.dir_exists_absolute(ProjectSettings.globalize_path(directory)):
+		return []
 	var dirs: PackedStringArray = DirAccess.get_directories_at(directory)
 	var files: PackedStringArray = DirAccess.get_files_at(directory)
 	

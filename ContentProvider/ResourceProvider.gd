@@ -82,12 +82,12 @@ func get_resource_async(name: String) -> ResourcePromise:
 	
 	if _resources_instances.has(name):
 		# Create a promise that does not need to do any loading.
-		var promise: ResourcePromise = ResourcePromise.new(name, _resources_paths[name], false)
+		var promise: ResourcePromise = ResourcePromise.new(_resources_paths[name], name, false)
 		promise.resource = _resources_instances[name]
 		promise.loading_finished.emit.call_deferred(ResourcePromise.STATUS.OK)
 		return promise
 	
-	var delayed_promise: ResourcePromise = ResourcePromise.new(name, _resources_paths[name])
+	var delayed_promise: ResourcePromise = ResourcePromise.new(_resources_paths[name], name)
 	
 	if _cache_mode == CACHE_MODE.KEEP:
 		delayed_promise.loading_finished.connect(_on_promise_loading_finished.bind(delayed_promise), CONNECT_ONE_SHOT)

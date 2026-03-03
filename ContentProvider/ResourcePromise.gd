@@ -19,7 +19,7 @@ var resource_path: String
 var resource_id: String
 
 
-func _init(id: String, path: String, perform_load: bool = true, use_sub_threads: bool = false) -> void:
+func _init(path: String, id: String = "", perform_load: bool = true, use_sub_threads: bool = false) -> void:
 	resource_id = id
 	resource_path = path
 	

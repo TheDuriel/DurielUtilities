@@ -42,7 +42,7 @@ static func error(emitter: Object, function: Callable, message = "") -> void:
 	print_rich(string)
 
 
-static func error_assert(emitter: Object, function: Callable, message = "") -> void:
+static func error_assert(emitter: Object, function: Callable, message: String = "") -> void:
 	error(emitter, function, message)
 	assert(false)
 

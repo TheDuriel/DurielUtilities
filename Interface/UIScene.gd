@@ -1,3 +1,4 @@
+@abstract
 class_name UIScene
 extends MarginContainer
 
@@ -18,6 +19,7 @@ var _is_suspended: bool = false
 var _suspend_sources: Array[Object] = []
 var _suspend_rect: ColorRect = ColorRect.new()
 var _suspend_tween: Tween
+var _instance_tween: Tween
 
 
 func _init() -> void:
@@ -28,11 +30,14 @@ func _init() -> void:
 	add_theme_constant_override("margin_right", 0)
 	add_theme_constant_override("margin_up", 0)
 	add_theme_constant_override("margin_down", 0)
+	
+	# This is done so we don't need to declare _ready
+	# Making it available for UI needs
+	ready.connect(_on_ready_internal, CONNECT_ONE_SHOT)
 
 
-func _ready() -> void:
-	enter_animation_finished.emit()
-
+func _on_ready_internal() -> void:
+	_animate_enter()
 
 
 func set_stack(owning_stack: UISceneStack) -> void:
@@ -51,9 +56,15 @@ func unsuspend(source: Object) -> void:
 	_update_suspension()
 
 
-func free_scene() -> void:
-	exit_animation_finished.emit()
-	queue_free()
+func free_scene(skip_animation: bool = false) -> void:
+	if skip_animation:
+		exit_animation_finished.emit()
+		queue_free()
+	else:
+		var t: Tween = create_tween()
+		t.tween_callback(_animate_exit.call_deferred)
+		t.tween_await(exit_animation_finished)
+		t.tween_callback(queue_free)
 
 
 func _update_suspension() -> void:
@@ -76,14 +87,36 @@ func _update_suspension() -> void:
 	propagate_call("set_process_unhandled_key_input", args)
 
 
-func _animate_suspended() -> void:
+@abstract func _animate_enter() -> void
+@abstract func _animate_exit() -> void
+@abstract func _animate_suspended() -> void
+@abstract func _animate_unsuspended() -> void
+
+
+func _animate_enter_default() -> void:
+	visible = true
+	modulate.a = 0.0
+	_instance_tween = TweenHelper.replace(self, _instance_tween)
+	_instance_tween.tween_property(self, "modulate:a", 1.0, 0.15)
+	_instance_tween.tween_callback(enter_animation_finished.emit)
+
+
+func _animate_exit_default() -> void:
+	visible = true
+	_instance_tween = TweenHelper.replace(self, _instance_tween)
+	_instance_tween.tween_property(self, "modulate:a", 0.0, 0.15)
+	_instance_tween.tween_property(self, "visible", false, 0.0)
+	_instance_tween.tween_callback(exit_animation_finished.emit)
+
+
+func _animate_suspended_default() -> void:
 	_suspend_rect.move_to_front()
 	_suspend_tween = TweenHelper.replace(self, _suspend_tween)
 	_suspend_rect.visible = true
 	_suspend_tween.tween_property(_suspend_rect, "modulate:a", 1.0, 0.15)
 
 
-func _animate_unsuspended() -> void:
+func _animate_unsuspended_default() -> void:
 	_suspend_rect.move_to_front()
 	_suspend_tween = TweenHelper.replace(self, _suspend_tween)
 	_suspend_tween.tween_property(_suspend_rect, "modulate:a", 0.0, 0.15)

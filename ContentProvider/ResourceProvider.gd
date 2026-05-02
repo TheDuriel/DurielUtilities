@@ -43,6 +43,7 @@ func _load_resources_from_inside_pck() -> void:
 	for path: String in resource_paths:
 		var resource_id: String = path.get_file().get_basename().to_lower()
 		_resources_paths[resource_id] = path
+		
 		if _cache_mode == CACHE_MODE.PRELOAD:
 			_resources_instances[resource_id] = load(path)
 
@@ -53,6 +54,7 @@ func _load_resources_next_to_binary() -> void:
 	for path: String in resource_paths:
 		var resource_id: String = path.get_file().get_basename().to_lower()
 		_resources_paths[resource_id] = path
+		
 		if _cache_mode == CACHE_MODE.PRELOAD:
 			_resources_instances[resource_id] = load(path)
 
@@ -70,6 +72,7 @@ func get_resource(name: String) -> Resource:
 		return _resources_instances[name]
 	
 	var resource: Resource = load(_resources_paths[name])
+	
 	if _cache_mode == CACHE_MODE.KEEP:
 		_resources_instances[name] = resource
 	

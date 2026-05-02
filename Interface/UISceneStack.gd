@@ -60,5 +60,5 @@ func erase_scene_async(scene: UIScene) -> void:
 		if child == scene:
 			continue
 		if is_instance_valid(scene):
-			scene.unsuspend(self)
+			child.unsuspend(self)
 			break

@@ -24,6 +24,7 @@ var _instance_tween: Tween
 
 func _init() -> void:
 	_suspend_rect.color = Color.BLACK
+	_suspend_rect.color.a = 0.75
 	_suspend_rect.visible = false
 	add_child(_suspend_rect)
 	add_theme_constant_override("margin_left", 0)
@@ -47,13 +48,41 @@ func set_stack(owning_stack: UISceneStack) -> void:
 func suspend(source: Object) -> void:
 	if not source in _suspend_sources:
 		_suspend_sources.append(source)
-	_update_suspension()
+	
+	var was_suspended: bool = _is_suspended
+	
+	if not _suspend_sources.is_empty():
+		_is_suspended = true
+	
+	if not was_suspended and _is_suspended:
+		_animate_suspended()
+		var args: Array = [true]
+		propagate_call("set_physics_process", args)
+		propagate_call("set_process", args)
+		propagate_call("set_process_input", args)
+		propagate_call("set_process_shortcut_input", args)
+		propagate_call("set_process_unhandled_input", args)
+		propagate_call("set_process_unhandled_key_input", args)
 
 
 func unsuspend(source: Object) -> void:
 	if source in _suspend_sources:
 		_suspend_sources.erase(source)
-	_update_suspension()
+	
+	var was_suspended: bool = _is_suspended
+	
+	if _suspend_sources.is_empty():
+		_is_suspended = false
+	
+	if was_suspended and not _is_suspended:
+		_animate_unsuspended()
+		var args: Array = [false]
+		propagate_call("set_physics_process", args)
+		propagate_call("set_process", args)
+		propagate_call("set_process_input", args)
+		propagate_call("set_process_shortcut_input", args)
+		propagate_call("set_process_unhandled_input", args)
+		propagate_call("set_process_unhandled_key_input", args)
 
 
 func free_scene(skip_animation: bool = false) -> void:
@@ -65,26 +94,6 @@ func free_scene(skip_animation: bool = false) -> void:
 		t.tween_callback(_animate_exit.call_deferred)
 		t.tween_await(exit_animation_finished)
 		t.tween_callback(queue_free)
-
-
-func _update_suspension() -> void:
-	# Are suspended, but should not be
-	if _is_suspended and _suspend_sources.is_empty():
-		_is_suspended = false
-		_animate_unsuspended()
-	# Are not suspended, but should be
-	elif not _is_suspended and not _suspend_sources.is_empty():
-		_is_suspended = true
-		_animate_suspended()
-	
-	var process_state: bool = not is_suspended # false if suspended, true if not
-	var args: Array = [process_state]
-	propagate_call("set_physics_process", args)
-	propagate_call("set_process", args)
-	propagate_call("set_process_input", args)
-	propagate_call("set_process_shortcut_input", args)
-	propagate_call("set_process_unhandled_input", args)
-	propagate_call("set_process_unhandled_key_input", args)
 
 
 @abstract func _animate_enter() -> void

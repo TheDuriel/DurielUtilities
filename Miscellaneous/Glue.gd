@@ -171,10 +171,14 @@ static func _bind(property: String, target: Object, new_text: String) -> void:
 # Adds a child node, and returns it on the same line.
 
 # Example use
-#var foo: Bar = Glue.init_add_child(Bar.new(), self)
+#var foo: Bar = Glue.add_child(Bar.new(), self)
 
-static func init_add_child(node: Node, owner: Node, child_name: String = "") -> Node:
+static func add_child(node: Node, owner: Node, child_name: String = "") -> Node:
 	owner.add_child(node)
 	if child_name:
 		node.name = child_name
 	return node
+
+
+static func init_add_child(node: Node, owner: Node, child_name: String = "") -> Node:
+	return add_child(node, owner, child_name)

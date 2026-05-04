@@ -2,6 +2,8 @@ class_name UISceneStack
 extends Control
 
 signal scene_added(scene: UIScene)
+signal scene_erased(scene: UIScene)
+signal all_scenes_erased
 
 ## Automatically apply full rect anchors preset at _ready
 @export var full_rect: bool = true
@@ -49,6 +51,7 @@ func erase_scene_async(scene: UIScene) -> void:
 	
 	scene.free_scene.call_deferred()
 	await scene.exit_animation_finished
+	scene_erased.emit(scene)
 	
 	var children: Array[Node] = get_children()
 	children.reverse()
@@ -62,3 +65,15 @@ func erase_scene_async(scene: UIScene) -> void:
 		if is_instance_valid(scene):
 			child.unsuspend(self)
 			break
+
+
+func erase_all_async() -> void:
+	var scenes: Array[Node] = get_children()
+	scenes.reverse()
+	
+	for scene: Node in scenes:
+		if scene is UIScene:
+			erase_scene(scene)
+			await scene.exit_animation_finished
+	
+	all_scenes_erased.emit.call_deferred()

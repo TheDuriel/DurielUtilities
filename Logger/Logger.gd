@@ -14,7 +14,7 @@ const ASSERT: bool = true
 @warning_ignore("untyped_declaration")
 static func confirm(emitter: Object, function: Callable, message = "") -> void:
 	var msg: String = _get_message(emitter, function, str(message))
-	var string: String = "[color=green]%s[/color]" % msg
+	var string: String = "[color=lightgreen]%s[/color]" % msg
 	print_rich(string)
 
 
@@ -30,7 +30,7 @@ static func hint(emitter: Object, function: Callable, message = "") -> void:
 @warning_ignore("untyped_declaration")
 static func warn(emitter: Object, function: Callable, message = "") -> void:
 	var msg: String = _get_message(emitter, function, str(message))
-	var string: String = "[color=yellow]%s[/color]" % msg
+	var string: String = "[color=navajowhite]%s[/color]" % msg
 	print_rich(string)
 
 
@@ -38,7 +38,7 @@ static func warn(emitter: Object, function: Callable, message = "") -> void:
 @warning_ignore("untyped_declaration")
 static func error(emitter: Object, function: Callable, message = "") -> void:
 	var msg: String = _get_message(emitter, function, str(message))
-	var string: String = "[color=red]%s[/color]" % msg
+	var string: String = "[color=orangered]%s[/color]" % msg
 	print_rich(string)
 
 

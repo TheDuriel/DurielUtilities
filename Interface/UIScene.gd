@@ -106,14 +106,14 @@ func _animate_enter_default() -> void:
 	visible = true
 	modulate.a = 0.0
 	_instance_tween = TweenHelper.replace(self, _instance_tween)
-	_instance_tween.tween_property(self, "modulate:a", 1.0, 0.15)
+	_instance_tween.tween_property(self, "modulate:a", 1.0, 0.33)
 	_instance_tween.tween_callback(enter_animation_finished.emit)
 
 
 func _animate_exit_default() -> void:
 	visible = true
 	_instance_tween = TweenHelper.replace(self, _instance_tween)
-	_instance_tween.tween_property(self, "modulate:a", 0.0, 0.15)
+	_instance_tween.tween_property(self, "modulate:a", 0.0, 0.33)
 	_instance_tween.tween_property(self, "visible", false, 0.0)
 	_instance_tween.tween_callback(exit_animation_finished.emit)
 
@@ -122,11 +122,11 @@ func _animate_suspended_default() -> void:
 	_suspend_rect.move_to_front()
 	_suspend_tween = TweenHelper.replace(self, _suspend_tween)
 	_suspend_rect.visible = true
-	_suspend_tween.tween_property(_suspend_rect, "modulate:a", 1.0, 0.15)
+	_suspend_tween.tween_property(_suspend_rect, "modulate:a", 1.0, 0.33)
 
 
 func _animate_unsuspended_default() -> void:
 	_suspend_rect.move_to_front()
 	_suspend_tween = TweenHelper.replace(self, _suspend_tween)
-	_suspend_tween.tween_property(_suspend_rect, "modulate:a", 0.0, 0.15)
+	_suspend_tween.tween_property(_suspend_rect, "modulate:a", 0.0, 0.33)
 	_suspend_tween.tween_property(_suspend_rect, "visible", false, 0.0)

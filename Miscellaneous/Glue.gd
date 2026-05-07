@@ -95,34 +95,34 @@ static func disconnect_all(a_signal: Signal) -> void:
 
 
 static func connect_signal(old: Signal, new: Signal, target_func: Callable) -> void:
-	if old and old.is_connected(target_func):
+	if not old.is_null() and old.is_connected(target_func):
 		old.disconnect(target_func)
-	if new:
+	if not new.is_null():
 		new.connect(target_func)
 
 
 static func connect_pressed(old: Button, new: Button, target_func: Callable) -> Button:
-	connect_signal(old.pressed, new.pressed, target_func)
+	connect_signal(old.pressed if old else Signal(), new.pressed if new else Signal(), target_func)
 	return new
 
 
 static func connect_focus_entered(old: Control, new: Control, target_func: Callable) -> Control:
-	connect_signal(old.focus_entered, new.focus_entered, target_func)
+	connect_signal(old.focus_entered if old else Signal(), new.focus_entered if new else Signal(), target_func)
 	return new
 
 
 static func connect_focus_exited(old: Control, new: Control, target_func: Callable) -> Control:
-	connect_signal(old.focus_exited, new.focus_exited, target_func)
+	connect_signal(old.focus_exited if old else Signal(), new.focus_exited if new else Signal(), target_func)
 	return new
 
 
 static func connect_mouse_entered(old: Control, new: Control, target_func: Callable) -> Control:
-	connect_signal(old.mouse_entered, new.mouse_entered, target_func)
+	connect_signal(old.mouse_entered if old else Signal(), new.mouse_entered if new else Signal(), target_func)
 	return new
 
 
 static func connect_mouse_exited(old: Control, new: Control, target_func: Callable) -> Control:
-	connect_signal(old.mouse_exited, new.mouse_exited, target_func)
+	connect_signal(old.mouse_exited if old else Signal(), new.mouse_exited if new else Signal(), target_func)
 	return new
 
 

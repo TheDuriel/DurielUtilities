@@ -23,6 +23,7 @@ var _instance_tween: Tween
 
 
 func _init() -> void:
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_suspend_rect.color = Color.BLACK
 	_suspend_rect.color.a = 0.75
 	_suspend_rect.visible = false

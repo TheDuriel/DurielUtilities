@@ -72,3 +72,17 @@ static func normalize_weights(weights: Array) -> Array[float]:
 		normalized_weights.append(normalized_weight)
 	
 	return normalized_weights
+
+
+static func dampen_velocity_along_direction(velocity: Vector3, direction: Vector3, dampen_amount: float) -> Vector3:
+	dampen_amount = clamp(dampen_amount, 0.0, 1.0)
+	# Avoid division by zero
+	if direction.length_squared() == 0.0:
+		return velocity
+	
+	var dir: Vector3 = direction.normalized()
+	var aligned: Vector3 = dir * velocity.dot(dir)
+	var perpendicular: Vector3 = velocity - aligned
+	perpendicular *= (1.0 - dampen_amount)
+	
+	return aligned + perpendicular

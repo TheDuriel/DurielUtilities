@@ -30,8 +30,8 @@ func _init() -> void:
 	add_child(_suspend_rect)
 	add_theme_constant_override("margin_left", 0)
 	add_theme_constant_override("margin_right", 0)
-	add_theme_constant_override("margin_up", 0)
-	add_theme_constant_override("margin_down", 0)
+	add_theme_constant_override("margin_top", 0)
+	add_theme_constant_override("margin_bottom", 0)
 	
 	# This is done so we don't need to declare _ready
 	# Making it available for UI needs

@@ -20,6 +20,9 @@ var resource_id: String
 
 
 func _init(path: String, id: String = "", perform_load: bool = true, use_sub_threads: bool = false) -> void:
+	if path.length() < 1:
+		DurielLogger.error_assert(self, _init, "%s is definitely not a valid resource path. ID: %s" % [path, id])
+	
 	resource_id = id
 	resource_path = path
 	

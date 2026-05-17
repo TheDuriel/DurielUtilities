@@ -72,7 +72,7 @@ func erase_all_async() -> void:
 	scenes.reverse()
 	
 	for scene: Node in scenes:
-		if scene is UIScene:
+		if is_instance_valid(scene) and scene is UIScene:
 			erase_scene(scene)
 			await scene.exit_animation_finished
 	

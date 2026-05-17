@@ -139,6 +139,6 @@ func _animate_unsuspended_default() -> void:
 
 
 func _grab_focus() -> void:
-	if focus_target and focus_target.focus_mode != Control.FOCUS_BEHAVIOR_DISABLED:
+	if focus_target:
 		focus_target.grab_click_focus()
 		focus_target.grab_focus()

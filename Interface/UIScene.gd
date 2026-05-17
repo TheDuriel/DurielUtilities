@@ -6,6 +6,7 @@ signal enter_animation_finished
 signal exit_animation_finished
 
 @export var darken_on_suspend: bool = false
+@export var focus_target: Control
 
 var stack: UISceneStack:
 	set(value): Glue.readonly()
@@ -84,6 +85,8 @@ func unsuspend(source: Object) -> void:
 		propagate_call("set_process_shortcut_input", args)
 		propagate_call("set_process_unhandled_input", args)
 		propagate_call("set_process_unhandled_key_input", args)
+	
+	_grab_focus()
 
 
 func free_scene(skip_animation: bool = false) -> void:
@@ -109,6 +112,7 @@ func _animate_enter_default() -> void:
 	_instance_tween = TweenHelper.replace(self, _instance_tween)
 	_instance_tween.tween_property(self, "modulate:a", 1.0, 0.33)
 	_instance_tween.tween_callback(enter_animation_finished.emit)
+	_instance_tween.tween_callback(_grab_focus)
 
 
 func _animate_exit_default() -> void:
@@ -131,3 +135,10 @@ func _animate_unsuspended_default() -> void:
 	_suspend_tween = TweenHelper.replace(self, _suspend_tween)
 	_suspend_tween.tween_property(_suspend_rect, "modulate:a", 0.0, 0.33)
 	_suspend_tween.tween_property(_suspend_rect, "visible", false, 0.0)
+	_suspend_tween.tween_callback(_grab_focus)
+
+
+func _grab_focus() -> void:
+	if focus_target and focus_target.focus_mode != Control.FOCUS_BEHAVIOR_DISABLED:
+		focus_target.grab_click_focus()
+		focus_target.grab_focus()

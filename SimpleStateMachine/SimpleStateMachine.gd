@@ -47,3 +47,15 @@ func _enter_state(new_state: SimpleState) -> void:
 	DurielLogger.confirm(self, _enter_state, "Entered")
 	
 	changed.emit(_previous_state, _active_state)
+
+
+func pass_input(event: InputEvent) -> void:
+	_active_state.pass_input(event)
+
+
+func pass_process(delta: float) -> void:
+	_active_state.pass_process(delta)
+
+
+func pass_physics_process(delta: float) -> void:
+	_active_state.pass_physics_process(delta)

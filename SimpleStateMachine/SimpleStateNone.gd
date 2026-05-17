@@ -16,3 +16,15 @@ func _enter(_previous_state: SimpleState) -> void:
 
 func _exit(_new_state: SimpleState) -> void:
 	emit_exited()
+
+
+func _input(_event: InputEvent) -> void:
+	pass
+
+
+func _process(_delta: float) -> void:
+	pass
+
+
+func _physics_process(_delta: float) -> void:
+	pass

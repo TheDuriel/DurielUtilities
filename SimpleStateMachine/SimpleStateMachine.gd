@@ -3,7 +3,7 @@ extends RefCounted
 
 signal changed(old_state: SimpleState, new_state: SimpleState)
 
-var tree: SceneTree
+var scene_tree: SceneTree
 
 var _previous_state: SimpleState = null
 var active_state: SimpleState:
@@ -22,6 +22,8 @@ func _enter_state_deferred(new_state: SimpleState) -> void:
 
 
 func _enter_state(new_state: SimpleState) -> void:
+	new_state.scene_tree = scene_tree
+	
 	if not _active_state.can_exit_to(new_state):
 		DurielLogger.error(self, _enter_state, "Current state can't exit to new state.")
 		return
@@ -40,7 +42,6 @@ func _enter_state(new_state: SimpleState) -> void:
 	
 	DurielLogger.confirm(self, _enter_state, "Entering %s" % DurielLogger.get_object_file_name(new_state))
 	_active_state = new_state
-	_active_state.scene_tree = tree
 	
 	_active_state.enter.call_deferred(_previous_state)
 	await _active_state.entered

@@ -14,9 +14,13 @@ var stack: UISceneStack:
 var is_suspended: bool:
 	set(value): Glue.readonly()
 	get: return _is_suspended
+var _is_suspended: bool = false
+var is_permanent: bool:
+	set(value): Glue.readonly()
+	get: return _is_permanent
+var _is_permanent: bool = false
 
 var _stack: UISceneStack
-var _is_suspended: bool = false
 var _suspend_sources: Array[Object] = []
 var _suspend_rect: ColorRect = ColorRect.new()
 var _suspend_tween: Tween
@@ -45,6 +49,10 @@ func _on_ready_internal() -> void:
 
 func set_stack(owning_stack: UISceneStack) -> void:
 	_stack = owning_stack
+
+
+func make_permanent() -> void:
+	_is_permanent = true
 
 
 func suspend(source: Object) -> void:
@@ -90,6 +98,9 @@ func unsuspend(source: Object) -> void:
 
 
 func free_scene(skip_animation: bool = false) -> void:
+	if _is_permanent:
+		return
+	
 	if skip_animation:
 		exit_animation_finished.emit()
 		queue_free()

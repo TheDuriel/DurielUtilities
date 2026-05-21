@@ -173,10 +173,12 @@ static func _bind(property: String, target: Object, new_text: String) -> void:
 # Example use
 #var foo: Bar = Glue.add_child(Bar.new(), self)
 
-static func add_child(node: Node, owner: Node, child_name: String = "") -> Node:
+static func add_child(node: Node, owner: Node, child_name: String = "", set_owner: bool = false) -> Node:
 	owner.add_child(node)
-	if child_name:
+	if child_name.length() > 0:
 		node.name = child_name
+	if set_owner:
+		node.owner = owner
 	return node
 
 

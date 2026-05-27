@@ -1,4 +1,3 @@
-@abstract
 class_name UIScene
 extends MarginContainer
 
@@ -45,6 +44,22 @@ func _init() -> void:
 
 func _on_ready_internal() -> void:
 	_animate_enter()
+
+
+func _animate_enter() -> void:
+	_animate_enter_default()
+
+
+func _animate_exit() -> void:
+	_animate_exit_default()
+
+
+func _animate_suspended() -> void:
+	_animate_suspended_default()
+
+
+func _animate_unsuspended() -> void:
+	_animate_unsuspended_default()
 
 
 func set_stack(owning_stack: UISceneStack) -> void:
@@ -110,11 +125,6 @@ func free_scene(skip_animation: bool = false) -> void:
 		t.tween_await(exit_animation_finished)
 		t.tween_callback(queue_free)
 
-
-@abstract func _animate_enter() -> void
-@abstract func _animate_exit() -> void
-@abstract func _animate_suspended() -> void
-@abstract func _animate_unsuspended() -> void
 
 
 func _animate_enter_default() -> void:

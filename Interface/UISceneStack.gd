@@ -40,10 +40,6 @@ func stack_scene(scene: UIScene) -> void:
 	scene_added.emit(scene)
 
 
-func erase_scene(scene: UIScene) -> void:
-	erase_scene_async.call_deferred(scene)
-
-
 func erase_scene_async(scene: UIScene) -> void:
 	if not scene in get_children():
 		DurielLogger.error(self, stack_scene, "Scene not in stack.")
@@ -73,7 +69,7 @@ func erase_all_async() -> void:
 	
 	for scene: Node in scenes:
 		if is_instance_valid(scene) and scene is UIScene:
-			erase_scene(scene)
+			erase_scene_async(scene)
 			await scene.exit_animation_finished
 	
 	all_scenes_erased.emit.call_deferred()

@@ -25,10 +25,10 @@ func _enter_state(new_state: SimpleState) -> void:
 	new_state.scene_tree = scene_tree
 	
 	if not _active_state.can_exit_to(new_state):
-		DurielLogger.error(self, _enter_state, "Current state can't exit to new state.")
+		DurielLogger.error_assert(self, _enter_state, "%s can't exit to %s" % [_active_state, new_state])
 		return
 	if not new_state.can_enter_from(_active_state):
-		DurielLogger.error(self, _enter_state, "New state can't enter from current state.")
+		DurielLogger.error_assert(self, _enter_state, "%s can't be entered from %s" % [_active_state, new_state])
 		return
 	
 	if _active_state:

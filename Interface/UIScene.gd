@@ -55,11 +55,13 @@ func _animate_exit() -> void:
 
 
 func _animate_suspended() -> void:
-	_animate_suspended_default()
+	if darken_on_suspend:
+		_animate_suspended_default()
 
 
 func _animate_unsuspended() -> void:
-	_animate_unsuspended_default()
+	if darken_on_suspend:
+		_animate_unsuspended_default()
 
 
 func set_stack(owning_stack: UISceneStack) -> void:

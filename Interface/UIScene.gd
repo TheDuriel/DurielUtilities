@@ -46,6 +46,7 @@ func _on_ready_internal() -> void:
 	_animate_enter()
 
 
+## Override these to prevent animations
 func _animate_enter() -> void:
 	_animate_enter_default()
 

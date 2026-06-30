@@ -41,7 +41,7 @@ func _init( # I hate this formatting. But it's needed.
 func _load_resources_from_inside_pck() -> void:
 	var resource_paths: PackedStringArray = FileFinder.find(_directory, _extensions)
 	for path: String in resource_paths:
-		var resource_id: String = path.get_file().get_basename().to_lower()
+		var resource_id: String = path.get_file().get_slice(".", 0).to_lower()
 		_resources_paths[resource_id] = path
 		
 		if _cache_mode == CACHE_MODE.PRELOAD:
@@ -52,7 +52,7 @@ func _load_resources_next_to_binary() -> void:
 	var external_dir: String = _directory.replace(RES_PATH, DOT_PATH)
 	var resource_paths: PackedStringArray = FileFinder.find(external_dir, _extensions)
 	for path: String in resource_paths:
-		var resource_id: String = path.get_file().get_basename().to_lower()
+		var resource_id: String = path.get_file().get_slice(".", 0).to_lower()
 		_resources_paths[resource_id] = path
 		
 		if _cache_mode == CACHE_MODE.PRELOAD:

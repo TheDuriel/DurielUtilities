@@ -1,0 +1,248 @@
+@tool
+class_name Arranger3D
+extends Node3D
+
+const COLINEAR_FIX_OFFSET: Vector3 = Vector3(0.001, 0.001, 0.001)
+
+enum MODE {NONE, LINE, GRID, RING, SPHERE}
+enum AXIS {X, Y, Z}
+
+# Can't be a constant cause I'm too lazy to make the functions static.
+var _mode_functions: Dictionary[MODE, Callable] = {
+		MODE.LINE : _generate_line,
+		MODE.GRID : _generate_grid,
+		MODE.RING : _generate_ring,
+		MODE.SPHERE : _generate_sphere,
+		}
+
+@export_group("Buttons")
+@export_tool_button("Randomize") var randomize_button: Callable = _randomize_children_order
+@export_tool_button("Clear Rotations") var clear_rotations_button: Callable = _clear_rotations
+@export_tool_button("Bake") var bake_button: Callable = _bake
+@export_tool_button("Debug") var debug_button: Callable = _debug
+
+@export_group("Settings")
+@export_custom( PROPERTY_HINT_NONE, "Number of child nodes.", PROPERTY_USAGE_READ_ONLY | PROPERTY_USAGE_DEFAULT)
+var children: int:
+	get: return _count
+@export_custom( PROPERTY_HINT_NONE, "Required child nodes.", PROPERTY_USAGE_READ_ONLY | PROPERTY_USAGE_DEFAULT)
+var required: int:
+	get: return _required
+@export var run_in_editor: bool = true
+@export var run_in_game: bool = false
+@export var lerp_position: bool = false
+@export var lerp_speed_in_units: float = 1.0
+@export var look_at_center: bool = false
+@export var use_rotation_offset: bool = false
+@export var rotation_offset: Vector3 = Vector3.ZERO
+
+
+@export_group("Mode")
+@export var mode: MODE = MODE.NONE:
+	set(value):
+		mode = value
+		notify_property_list_changed()
+
+@export_group("Line Settings")
+@export var line_length: float = 16.0:
+	set(value): line_length = max(value, 1.0)
+@export var line_axis: AXIS = AXIS.X
+
+@export_group("Grid Settings")
+@export var grid_spacing: Vector3 = Vector3(2.0, 2.0, 2.0)
+@export var grid_size: Vector3i = Vector3(4, 4, 4):
+	set(value):
+		value.x = max(value.x, 1)
+		value.y = max(value.y, 1)
+		value.z = max(value.z, 1)
+		grid_size = value
+
+@export_group("Ring Settings")
+@export var ring_radius: float = 16.0:
+	set(value): ring_radius = max(value, 1.0)
+
+@export_group("Sphere Settings")
+@export var sphere_scale: float = 1.0
+@export var sphere_radius: float = 8.0
+@export var sphere_height: float = 16.0
+@export var sphere_segments: int = 16
+@export var sphere_rings: int = 8
+@export var sphere_is_hemispere: bool = false
+
+
+var _count: int = 0
+var _required: int = 0
+var _points: Array[Vector3] = []
+
+
+func _validate_property(property: Dictionary) -> void:
+	var pname: String = property.name
+	
+	var k: Array = MODE.keys()
+	var valid: String = k[mode].to_lower()
+	var invalid: Array = k
+	invalid.erase(k[mode])
+	
+	if pname.begins_with(valid):
+		return
+	if pname in ["script", "editor_description"]:
+		return
+	
+	for prefix: String in invalid:
+		if pname.begins_with(prefix.to_lower()):
+			property.usage = PROPERTY_USAGE_STORAGE
+
+
+func _ready() -> void:
+	child_entered_tree.connect(_on_child_entered)
+	child_exiting_tree.connect(_on_child_exiting)
+
+
+func _process(_delta: float) -> void:
+	if Engine.is_editor_hint():
+		if not run_in_editor:
+			return
+		if not self in EditorInterface.get_selection().get_selected_nodes():
+			return
+	if not Engine.is_editor_hint() and not run_in_game:
+		return
+	
+	_update()
+
+
+func _update() -> void:
+	_create_points()
+	_move_nodes()
+
+
+func _create_points() -> void:
+	_count = get_child_count()
+	_points = []
+	_points.resize(_count)
+	
+	if _count < 1:
+		return
+	
+	if mode == MODE.NONE:
+		return
+	
+	if mode in _mode_functions:
+		_mode_functions[mode].call()
+
+
+func _move_nodes() -> void:
+	for c: int in _count:
+		var n: Node = get_child(c)
+		
+		if n is Node3D:
+			
+			if lerp_position:
+				n.position = n.position.move_toward(_points[c], lerp_speed_in_units)
+			else:
+				n.position = _points[c]
+			
+			if look_at_center:
+				n.look_at(self.global_position, Vector3.UP + COLINEAR_FIX_OFFSET)
+				if use_rotation_offset:
+					n.rotation_degrees += rotation_offset
+			
+			elif use_rotation_offset:
+				n.rotation_degrees = rotation_offset
+
+
+func _randomize_children_order() -> void:
+	for n: Node in get_children():
+		move_child(n, randi_range(0, get_child_count(-1)))
+
+
+func _clear_rotations() -> void:
+	for n: Node in get_children():
+		if n is Node3D:
+			n.rotation = Vector3.ZERO
+
+
+func _bake() -> void:
+	if not Engine.is_editor_hint():
+		return
+	
+	set_process(false)
+	await get_tree().process_frame
+	replace_by.call_deferred(Node3D.new())
+
+
+func _on_child_entered(_node: Node) -> void:
+	_update.call_deferred()
+
+
+func _on_child_exiting(_node: Node) -> void:
+	_update.call_deferred()
+
+
+func _generate_line() -> void:
+	_required = -1
+	
+	for c: int in _count:
+		var a: float = (line_length / _count) * c
+		a -= line_length * 0.5
+		match line_axis:
+			AXIS.X: _points[c] = Vector3(a, 0.0, 0.0)
+			AXIS.Y: _points[c] = Vector3(0.0, a, 0.0)
+			AXIS.Z: _points[c] = Vector3(0.0, 0.0, a)
+
+
+func _generate_grid() -> void:
+	var max_grid_nodes: int = grid_size.x * grid_size.y * grid_size.z
+	_required = max_grid_nodes
+	var nodes_out_of_bounds: int = _count - max_grid_nodes
+	
+	if nodes_out_of_bounds > 0:
+		printerr("Arranger3D: Grid max nodes %s, you have %s too many!" % [max_grid_nodes, nodes_out_of_bounds])
+	
+	var center_offset: Vector3 = ((Vector3(grid_size) * grid_spacing) / 2) - (grid_spacing * 0.5)
+	
+	for c: int in _count:
+		if c >= max_grid_nodes:
+			return
+		
+		@warning_ignore("integer_division")
+		@warning_ignore("integer_division")
+		var p: Vector3 = Vector3(
+				c % grid_size.x,
+				c / (grid_size.x * grid_size.z),
+				(c / grid_size.x) % grid_size.z
+				)
+		p *= grid_spacing
+		p -= center_offset
+		_points[c] = p
+
+
+func _generate_ring() -> void:
+	_required = -1
+	
+	for c: int in _count:
+		var r: float = (TAU / _count) * c
+		_points[c] = Vector3.RIGHT.rotated(Vector3.UP, r) * ring_radius
+
+
+func _generate_sphere() -> void:
+	var primitive: SphereMesh = SphereMesh.new()
+	primitive.height = sphere_height * sphere_scale
+	primitive.radius = sphere_radius * sphere_scale
+	primitive.radial_segments = sphere_segments
+	primitive.rings = sphere_rings
+	primitive.is_hemisphere = sphere_is_hemispere
+	
+	var a: Array = primitive.get_mesh_arrays()[0]
+	var verts: Array[Vector3] = []
+	@warning_ignore("integer_division")
+	for i: int in range(0, a.size(), 2):
+		verts.append(a[i])
+	
+	_required = verts.size()
+	
+	for c: int in _count:
+		_points[c] = verts[c]
+
+
+func _debug() -> void:
+	pass

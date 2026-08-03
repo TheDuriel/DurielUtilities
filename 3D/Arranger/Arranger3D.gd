@@ -296,7 +296,7 @@ func _generate_grid_hull() -> void:
 	
 	_required = verts.size()
 	
-	for c: int in _count:
+	for c: int in min(_count, verts.size()):
 		_points[c] = verts[c]
 
 
@@ -324,5 +324,5 @@ func _generate_sphere() -> void:
 	
 	_required = verts.size()
 	
-	for c: int in _count:
+	for c: int in min(_count, verts.size()):
 		_points[c] = verts[c]

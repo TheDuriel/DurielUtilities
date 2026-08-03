@@ -23,6 +23,8 @@ var _mode_functions: Dictionary[MODE, Callable] = {
 @export_tool_button("Bake") var bake_button: Callable = _bake
 @export_tool_button("Add Missing Nodes") var add_missing_button: Callable = _add_missing
 @export_tool_button("Delete Extra Nodes") var delete_extra_button: Callable = _delete_extra
+@export_tool_button("Fill with Marker3D") var fill_marker_button: Callable = _fill_marker
+@export_tool_button("Delete Half") var delete_half_button: Callable = _delete_half
 @export_tool_button("Debug") var debug_button: Callable = _debug
 
 @export_group("Settings")
@@ -207,7 +209,9 @@ func _add_missing() -> void:
 	
 	if missing > 0:
 		for i: int in missing:
-			add_child(c.duplicate())
+			var n: Node = c.duplicate()
+			add_child(n)
+			n.owner = c.owner
 
 
 func _delete_extra() -> void:
@@ -221,6 +225,31 @@ func _delete_extra() -> void:
 	
 	var cnodes: Array[Node] = get_children()
 	var c: Array[Node] = cnodes.slice(required)
+	for n: Node in c:
+		n.queue_free()
+
+
+func _fill_marker() -> void:
+	_update()
+	
+	if required == -1:
+		return
+	
+	var missing: int = required - children
+	
+	if missing > 0:
+		for i: int in missing:
+			var m: Marker3D = Marker3D.new()
+			add_child(m)
+			m.owner = owner if owner else self
+
+
+func _delete_half() -> void:
+	_update()
+	
+	var cnodes: Array[Node] = get_children()
+	@warning_ignore("integer_division")
+	var c: Array[Node] = cnodes.slice(cnodes.size() / 2)
 	for n: Node in c:
 		n.queue_free()
 

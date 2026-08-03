@@ -3,6 +3,7 @@ class_name Arranger3D
 extends Node3D
 
 const COLINEAR_FIX_OFFSET: Vector3 = Vector3(0.001, 0.001, 0.001)
+const EDITOR_TICK_COOLDOWN: int = 2 # Only tick every x frame in the editor to save a bit of performance
 
 enum MODE {NONE, LINE, GRID, GRID_HULL, RING, SPHERE}
 enum AXIS {X, Y, Z}
@@ -20,6 +21,8 @@ var _mode_functions: Dictionary[MODE, Callable] = {
 @export_tool_button("Randomize") var randomize_button: Callable = _randomize_children_order
 @export_tool_button("Clear Rotations") var clear_rotations_button: Callable = _clear_rotations
 @export_tool_button("Bake") var bake_button: Callable = _bake
+@export_tool_button("Add Missing Nodes") var add_missing_button: Callable = _add_missing
+@export_tool_button("Delete Extra Nodes") var delete_extra_button: Callable = _delete_extra
 @export_tool_button("Debug") var debug_button: Callable = _debug
 
 @export_group("Settings")
@@ -81,6 +84,7 @@ var required: int:
 		grid_hull_size = value
 
 
+var _editor_tick_count: int = 0
 var _count: int = 0
 var _required: int = 0
 var _points: Array[Vector3] = []
@@ -115,6 +119,13 @@ func _process(_delta: float) -> void:
 			return
 		if not self in EditorInterface.get_selection().get_selected_nodes():
 			return
+		
+		_editor_tick_count += 1
+		
+		if _editor_tick_count < EDITOR_TICK_COOLDOWN:
+			return
+		_editor_tick_count = 0
+		
 	if not Engine.is_editor_hint() and not run_in_game:
 		return
 	
@@ -153,6 +164,9 @@ func _move_nodes() -> void:
 				n.position = _points[c]
 			
 			if look_at_center:
+				if n.position.is_equal_approx(Vector3.ZERO):
+					continue
+				
 				n.look_at(self.global_position, Vector3.UP + COLINEAR_FIX_OFFSET)
 				if use_rotation_offset:
 					n.rotation_degrees += rotation_offset
@@ -181,6 +195,40 @@ func _bake() -> void:
 	replace_by.call_deferred(Node3D.new())
 
 
+func _add_missing() -> void:
+	_update()
+	
+	if required == -1:
+		return
+	
+	var missing: int = required - children
+	
+	var c: Node = get_child(0)
+	
+	if missing > 0:
+		for i: int in missing:
+			add_child(c.duplicate())
+
+
+func _delete_extra() -> void:
+	_update()
+	
+	if required == -1:
+		return
+	
+	if not children > required:
+		return
+	
+	var cnodes: Array[Node] = get_children()
+	var c: Array[Node] = cnodes.slice(required)
+	for n: Node in c:
+		n.queue_free()
+
+
+func _debug() -> void:
+	pass
+
+
 func _on_child_entered(_node: Node) -> void:
 	_update.call_deferred()
 
@@ -204,10 +252,6 @@ func _generate_line() -> void:
 func _generate_grid() -> void:
 	var max_grid_nodes: int = grid_size.x * grid_size.y * grid_size.z
 	_required = max_grid_nodes
-	var nodes_out_of_bounds: int = _count - max_grid_nodes
-	
-	if nodes_out_of_bounds > 0:
-		printerr("Arranger3D: Grid max nodes %s, you have %s too many!" % [max_grid_nodes, nodes_out_of_bounds])
 	
 	var center_offset: Vector3 = ((Vector3(grid_size) - Vector3.ONE) / 2) * grid_spacing
 	
@@ -282,7 +326,3 @@ func _generate_sphere() -> void:
 	
 	for c: int in _count:
 		_points[c] = verts[c]
-
-
-func _debug() -> void:
-	pass

@@ -4,13 +4,14 @@ extends Node3D
 
 const COLINEAR_FIX_OFFSET: Vector3 = Vector3(0.001, 0.001, 0.001)
 
-enum MODE {NONE, LINE, GRID, RING, SPHERE}
+enum MODE {NONE, LINE, GRID, GRID_HULL, RING, SPHERE}
 enum AXIS {X, Y, Z}
 
 # Can't be a constant cause I'm too lazy to make the functions static.
 var _mode_functions: Dictionary[MODE, Callable] = {
 		MODE.LINE : _generate_line,
 		MODE.GRID : _generate_grid,
+		MODE.GRID_HULL : _generate_grid_hull,
 		MODE.RING : _generate_ring,
 		MODE.SPHERE : _generate_sphere,
 		}
@@ -68,6 +69,16 @@ var required: int:
 @export var sphere_segments: int = 16
 @export var sphere_rings: int = 8
 @export var sphere_is_hemispere: bool = false
+
+
+@export_group("Grid Hull Settings")
+@export var grid_hull_spacing: float = 2.0
+@export var grid_hull_size: Vector3i = Vector3i(4, 4, 4):
+	set(value):
+		value.x = max(value.x, 2)
+		value.y = max(value.y, 2)
+		value.z = max(value.z, 2)
+		grid_hull_size = value
 
 
 var _count: int = 0
@@ -198,7 +209,7 @@ func _generate_grid() -> void:
 	if nodes_out_of_bounds > 0:
 		printerr("Arranger3D: Grid max nodes %s, you have %s too many!" % [max_grid_nodes, nodes_out_of_bounds])
 	
-	var center_offset: Vector3 = ((Vector3(grid_size) * grid_spacing) / 2) - (grid_spacing * 0.5)
+	var center_offset: Vector3 = ((Vector3(grid_size) - Vector3.ONE) / 2) * grid_spacing
 	
 	for c: int in _count:
 		if c >= max_grid_nodes:
@@ -214,6 +225,35 @@ func _generate_grid() -> void:
 		p *= grid_spacing
 		p -= center_offset
 		_points[c] = p
+
+
+func _generate_grid_hull() -> void:
+	var verts: Array[Vector3] = []
+	
+	var center_offset: Vector3 = ((Vector3(grid_hull_size) - Vector3.ONE) / 2) * grid_hull_spacing
+	
+	# Floor and Ceiling
+	for x: int in grid_hull_size.x:
+		for z: int in grid_hull_size.z:
+			var v1: Vector3 = Vector3(x, 0.0, z) * grid_hull_spacing
+			var v2: Vector3 = Vector3(x, grid_hull_size.y - 1, z) * grid_hull_spacing
+			verts.append(v1 - center_offset)
+			verts.append(v2 - center_offset)
+	
+	# Walls
+	for y: int in range(1, grid_hull_size.y - 1):
+		for x: int in grid_hull_size.x:
+			for z: int in grid_hull_size.z:
+				if not x in [0, grid_hull_size.x - 1] and not z in [0, grid_hull_size.z - 1]:
+					continue
+				
+				var v: Vector3 = Vector3(x, y, z) * grid_hull_spacing
+				verts.append(v - center_offset)
+	
+	_required = verts.size()
+	
+	for c: int in _count:
+		_points[c] = verts[c]
 
 
 func _generate_ring() -> void:

@@ -24,6 +24,7 @@ var _mode_functions: Dictionary[MODE, Callable] = {
 @export_tool_button("Add Missing Nodes") var add_missing_button: Callable = _add_missing
 @export_tool_button("Delete Extra Nodes") var delete_extra_button: Callable = _delete_extra
 @export_tool_button("Fill with Marker3D") var fill_marker_button: Callable = _fill_marker
+@export_tool_button("Double Nodes") var double_nodes_button: Callable = _double_nodes
 @export_tool_button("Delete Half") var delete_half_button: Callable = _delete_half
 @export_tool_button("Debug") var debug_button: Callable = _debug
 
@@ -242,6 +243,15 @@ func _fill_marker() -> void:
 			var m: Marker3D = Marker3D.new()
 			add_child(m)
 			m.owner = owner if owner else self
+
+
+func _double_nodes() -> void:
+	_update()
+	var cnodes: Array[Node] = get_children()
+	for cd: Node in cnodes:
+		var n: Node = cd.duplicate()
+		add_child(n)
+		n.owner = n.owner
 
 
 func _delete_half() -> void:

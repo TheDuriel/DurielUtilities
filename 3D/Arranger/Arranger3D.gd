@@ -29,6 +29,7 @@ var _mode_functions: Dictionary[MODE, Callable] = {
 @export_tool_button("Debug") var debug_button: Callable = _debug
 
 @export_group("Settings")
+@export var proxy: Node3D
 @export_custom( PROPERTY_HINT_NONE, "Number of child nodes.", PROPERTY_USAGE_READ_ONLY | PROPERTY_USAGE_DEFAULT)
 var children: int:
 	get: return _count
@@ -141,7 +142,7 @@ func _update() -> void:
 
 
 func _create_points() -> void:
-	_count = get_child_count()
+	_count = proxy.get_child_count() if proxy else get_child_count()
 	_points = []
 	_points.resize(_count)
 	
@@ -157,7 +158,7 @@ func _create_points() -> void:
 
 func _move_nodes() -> void:
 	for c: int in _count:
-		var n: Node = get_child(c)
+		var n: Node = proxy.get_child(c) if proxy else get_child(c)
 		
 		if n is Node3D:
 			
@@ -180,11 +181,11 @@ func _move_nodes() -> void:
 
 func _randomize_children_order() -> void:
 	for n: Node in get_children():
-		move_child(n, randi_range(0, get_child_count(-1)))
+		move_child(n, randi_range(0, proxy.get_child_count() if proxy else get_child_count()))
 
 
 func _clear_rotations() -> void:
-	for n: Node in get_children():
+	for n: Node in proxy.get_children() if proxy else get_children():
 		if n is Node3D:
 			n.rotation = Vector3.ZERO
 
@@ -206,12 +207,15 @@ func _add_missing() -> void:
 	
 	var missing: int = required - children
 	
-	var c: Node = get_child(0)
+	var c: Node = proxy.get_child(0) if proxy else get_child(0)
 	
 	if missing > 0:
 		for i: int in missing:
 			var n: Node = c.duplicate()
-			add_child(n)
+			if proxy:
+				proxy.add_child(n)
+			else:
+				add_child(n)
 			n.owner = c.owner
 
 
@@ -224,7 +228,7 @@ func _delete_extra() -> void:
 	if not children > required:
 		return
 	
-	var cnodes: Array[Node] = get_children()
+	var cnodes: Array[Node] = proxy.get_children() if proxy else get_children()
 	var c: Array[Node] = cnodes.slice(required)
 	for n: Node in c:
 		n.queue_free()
@@ -241,7 +245,10 @@ func _fill_marker() -> void:
 	if missing > 0:
 		for i: int in missing:
 			var m: Marker3D = Marker3D.new()
-			add_child(m)
+			if proxy:
+				proxy.add_child(m)
+			else:
+				add_child(m)
 			m.owner = owner if owner else self
 
 
@@ -250,14 +257,17 @@ func _double_nodes() -> void:
 	var cnodes: Array[Node] = get_children()
 	for cd: Node in cnodes:
 		var n: Node = cd.duplicate()
-		add_child(n)
+		if proxy:
+			proxy.add_child(n)
+		else:
+			add_child(n)
 		n.owner = n.owner
 
 
 func _delete_half() -> void:
 	_update()
 	
-	var cnodes: Array[Node] = get_children()
+	var cnodes: Array[Node] = proxy.get_children() if proxy else get_children()
 	@warning_ignore("integer_division")
 	var c: Array[Node] = cnodes.slice(cnodes.size() / 2)
 	for n: Node in c:

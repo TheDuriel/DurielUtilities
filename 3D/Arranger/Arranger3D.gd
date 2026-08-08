@@ -39,22 +39,29 @@ var required: int:
 	get: return _required
 @export var run_in_editor: bool = true
 @export var run_in_game: bool = false
+
+@export_group("Transform")
 @export var lerp_position: bool = false
 @export var lerp_speed_in_units: float = 1.0
 @export var look_at_center: bool = false
 @export var use_rotation_offset: bool = false
 @export var rotation_offset: Vector3 = Vector3.ZERO
-@export var use_random_x_offset: bool = false
-@export var random_x_offset_range: Vector2 = Vector2(-1.0, 1.0):
-	set(value): random_x_offset_range = Vector2(min(value.x, 0), max(value.y, 0))
-@export var use_random_y_offset: bool = false
-@export var random_y_offset_range: Vector2 = Vector2(-1.0, 1.0):
-	set(value): random_y_offset_range = Vector2(min(value.x, 0), max(value.y, 0))
-@export var use_random_z_offset: bool = false
-@export var random_z_offset_range: Vector2 = Vector2(-1.0, 1.0):
-	set(value): random_z_offset_range = Vector2(min(value.x, 0), max(value.y, 0))
-@export var random_spacing_iterations: int = 3
+
+@export_group("Random")
 @export var random_seed: int = randi()
+@export var random_spacing_iterations: int = 3
+@export var use_random_x_offset: bool = false
+@export var use_random_y_offset: bool = false
+@export var use_random_z_offset: bool = false
+@export var use_random_scale: bool = false
+@export var random_x_offset_range: Vector2 = Vector2(-1.0, 1.0):
+	set(value): random_x_offset_range = Vector2(min(value.x, value.y), max(value.y, 0))
+@export var random_y_offset_range: Vector2 = Vector2(-1.0, 1.0):
+	set(value): random_y_offset_range = Vector2(min(value.x, value.y), max(value.y, 0))
+@export var random_z_offset_range: Vector2 = Vector2(-1.0, 1.0):
+	set(value): random_z_offset_range = Vector2(min(value.x, value.y), max(value.y, 0))
+@export var random_scale_range: Vector2 = Vector2(0.8, 1.2):
+	set(value): random_scale_range = Vector2(min(value.x, value.y), max(value.y, 0))
 
 @export_group("Mode")
 @export var mode: MODE = MODE.NONE:
@@ -195,6 +202,8 @@ func _apply_random_offset() -> void:
 
 
 func _move_nodes() -> void:
+	_random.seed = random_seed
+	
 	for c: int in _count:
 		var n: Node = proxy.get_child(c) if proxy else get_child(c)
 		
@@ -215,6 +224,9 @@ func _move_nodes() -> void:
 			
 			elif use_rotation_offset:
 				n.rotation_degrees = rotation_offset
+			
+			if use_random_scale:
+				n.scale = Vector3.ONE * _random.randf_range(random_scale_range.x, random_scale_range.y)
 
 
 func _randomize_children_order() -> void:

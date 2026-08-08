@@ -2,12 +2,26 @@
 class_name Arranger3D
 extends Node3D
 
+# Offset used for various vector functions to prevent axix alignment
 const COLINEAR_FIX_OFFSET: Vector3 = Vector3(0.001, 0.001, 0.001)
-const EDITOR_TICK_COOLDOWN: int = 2 # Only tick every x frame in the editor to save a bit of performance
+## Number of frames to wait between process iterations when running in the editor.
+## Minor performance saver.
+const EDITOR_TICK_COOLDOWN: int = 2
 
 enum AXIS {X, Y, Z}
 
-enum MODE {NONE, LINE, GRID, HOLLOW_GRID, RING, SPHERE, SCATTER_BOX, SCATTER_SPHERE}
+## Arrange Modes
+## Add new modes here, then also add them to _mode_functions
+enum MODE {
+		NONE, ## Nothing.
+		LINE, ## A single Line along an axis with a fixed length. Nodes are evenly spaced along it.
+		GRID, ## A three dimensional grid with even spacing.
+		HOLLOW_GRID, ## Like GRID, but hollow.
+		RING, ## A ring with a set radius. Nodes are evenly spaced along it.
+		SPHERE, ## A Sphere primitive, nodes are placed at each vertex.
+		SCATTER_BOX, ## Scatters nodes randomly within a box.
+		SCATTER_SPHERE ## Scatters nodes randomly within a radius.
+		}
 # Can't be a constant cause I'm too lazy to make the functions static.
 var _mode_functions: Dictionary[MODE, Callable] = {
 		MODE.LINE : _generate_line,
@@ -19,63 +33,98 @@ var _mode_functions: Dictionary[MODE, Callable] = {
 		MODE.SCATTER_SPHERE : _generate_scatter_sphere}
 
 @export_group("Buttons")
-@export_tool_button("Randomize") var randomize_button: Callable = _randomize_children_order
+## Randomize the order of the nodes.
+@export_tool_button("Randomize Children") var randomize_button: Callable = _randomize_children_order
+## Clears all applied rotations.
 @export_tool_button("Clear Rotations") var clear_rotations_button: Callable = _clear_rotations
+## Replaces the Arranger3D with a plain Node3D
 @export_tool_button("Bake") var bake_button: Callable = _bake
+## Duplicates the first child node until the children count matches the required count.
+## Has no effect on modes that do not have a specific count requirement.
 @export_tool_button("Add Missing Nodes") var add_missing_button: Callable = _add_missing
+## Deletes nodes above the count requirement. From the end.
 @export_tool_button("Delete Extra Nodes") var delete_extra_button: Callable = _delete_extra
+## Like Add Missing Nodes, but uses Marker3Ds to fufill the count requirement.
 @export_tool_button("Fill with Marker3D") var fill_marker_button: Callable = _fill_marker
+## Duplicates every node once.
 @export_tool_button("Double Nodes") var double_nodes_button: Callable = _double_nodes
+## Deletes half of the nodes. From the end.
 @export_tool_button("Delete Half") var delete_half_button: Callable = _delete_half
-@export_tool_button("Debug") var debug_button: Callable = _debug
 
 @export_group("Settings")
+## When set, arranges the children of the set node instead of the Arrangers own.
 @export var proxy: Node3D
+## Current number of child nodes.
 @export_custom( PROPERTY_HINT_NONE, "Number of child nodes.", PROPERTY_USAGE_READ_ONLY | PROPERTY_USAGE_DEFAULT)
 var children: int:
 	get: return _count
+## Number of child nodes recommended by the current MODE.
 @export_custom( PROPERTY_HINT_NONE, "Required child nodes.", PROPERTY_USAGE_READ_ONLY | PROPERTY_USAGE_DEFAULT)
 var required: int:
 	get: return _required
+## When true, Arranger will live update in the editor.
+## Update rate is limited by EDITOR_TICK_COOLDOWN
 @export var run_in_editor: bool = true
+## When true, Arranger will live update at runtime.
 @export var run_in_game: bool = false
 
 @export_group("Transform")
+## When true, nodes will move_toward their position
 @export var lerp_position: bool = false
+## Number of units per second to move_toward
 @export var lerp_speed_in_units: float = 1.0
+## When true, nodes will look_at the Arranger or Proxy.
 @export var look_at_center: bool = false
+## When true, apply the rotation offset.
 @export var use_rotation_offset: bool = false
+## Rotation offset in degrees.
 @export var rotation_offset: Vector3 = Vector3.ZERO
 
 @export_group("Random")
+## Seed used for randomization.
 @export var random_seed: int = randi()
+## Maximum number of attempts to try and improve on random distibution.
+## Large numbers can have significant performance impacts.
 @export var random_spacing_iterations: int = 3
+## When true, apply a random offset to the X position.
 @export var use_random_x_offset: bool = false
+## When true, apply a random offset to the Y position.
 @export var use_random_y_offset: bool = false
+## When true, apply a random offset to the Z position.
 @export var use_random_z_offset: bool = false
+## When true, apply a random scale multiplier.
 @export var use_random_scale: bool = false
+## Range for X axis position randomness.
 @export var random_x_offset_range: Vector2 = Vector2(-1.0, 1.0):
 	set(value): random_x_offset_range = Vector2(min(value.x, value.y), max(value.y, 0))
+## Range for Y axis position randomness.
 @export var random_y_offset_range: Vector2 = Vector2(-1.0, 1.0):
 	set(value): random_y_offset_range = Vector2(min(value.x, value.y), max(value.y, 0))
+## Range for Z axis position randomness.
 @export var random_z_offset_range: Vector2 = Vector2(-1.0, 1.0):
 	set(value): random_z_offset_range = Vector2(min(value.x, value.y), max(value.y, 0))
+## Range for scale multiplier randomness.
 @export var random_scale_range: Vector2 = Vector2(0.8, 1.2):
 	set(value): random_scale_range = Vector2(min(value.x, value.y), max(value.y, 0))
 
 @export_group("Mode")
+## Current mode.
 @export var mode: MODE = MODE.NONE:
 	set(value):
 		mode = value
 		notify_property_list_changed()
 
 @export_group("Line Settings")
+## Length of the Line.
 @export var line_length: float = 16.0:
 	set(value): line_length = max(value, 1.0)
+## Local axis to use for arranging.
 @export var line_axis: AXIS = AXIS.X
 
 @export_group("Grid Settings")
+## Distance between grid points.
 @export var grid_spacing: Vector3 = Vector3(2.0, 2.0, 2.0)
+## Number of rows, columns, and lines in the grid.
 @export var grid_size: Vector3i = Vector3(4, 4, 4):
 	set(value):
 		value.x = max(value.x, 1)
@@ -84,20 +133,30 @@ var required: int:
 		grid_size = value
 
 @export_group("Ring Settings")
+## Ring radius.
 @export var ring_radius: float = 16.0:
 	set(value): ring_radius = max(value, 1.0)
 
 @export_group("Sphere Settings")
+## Scale multiplier for the sphere.
 @export var sphere_scale: float = 1.0
+## Radius, as width.
 @export var sphere_radius: float = 8.0
+## Heigth, as in tallness. Must be 2* radius for a perfect sphere.
+## Deviating from this will produce oblong/oval spheres.
 @export var sphere_height: float = 16.0
+## Number of vertical subdivisions.
 @export var sphere_segments: int = 16
+## Number of horizontal subdivisions. Should be half the segment count.
 @export var sphere_rings: int = 8
+## When true, creates a half sphere.
 @export var sphere_is_hemispere: bool = false
 
 
 @export_group("Grid Hull Settings")
+## Distance between grid points.
 @export var grid_hull_spacing: float = 2.0
+## Number of rows, columns, and lines in the grid.
 @export var grid_hull_size: Vector3i = Vector3i(4, 4, 4):
 	set(value):
 		value.x = max(value.x, 2)
@@ -106,11 +165,15 @@ var required: int:
 		grid_hull_size = value
 
 @export_group("Scatter Box Settings")
+## Size of the box, centered on the arranger/proxy.
 @export var scatter_box_size: Vector3 = Vector3(16, 16, 16)
+## Desired spacing between points, quality is limited by random_spacing_iterations.
 @export var scatter_box_minimum_spacing: float = 1.0
 
 @export_group("Scatter Sphere Settings")
+## Size of the sphere, centered on the arranger/proxy.
 @export var scatter_sphere_radius: float = 8.0
+## Desired spacing between points, quality is limited by random_spacing_iterations.
 @export var scatter_sphere_minimum_spacing: float = 1.0
 
 
@@ -324,10 +387,6 @@ func _delete_half() -> void:
 	var c: Array[Node] = cnodes.slice(cnodes.size() / 2)
 	for n: Node in c:
 		n.queue_free()
-
-
-func _debug() -> void:
-	pass
 
 
 func _on_child_entered(_node: Node) -> void:

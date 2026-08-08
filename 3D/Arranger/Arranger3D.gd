@@ -7,12 +7,12 @@ const EDITOR_TICK_COOLDOWN: int = 2 # Only tick every x frame in the editor to s
 
 enum AXIS {X, Y, Z}
 
-enum MODE {NONE, LINE, GRID, GRID_HULL, RING, SPHERE, SCATTER_BOX, SCATTER_SPHERE}
+enum MODE {NONE, LINE, GRID, HOLLOW_GRID, RING, SPHERE, SCATTER_BOX, SCATTER_SPHERE}
 # Can't be a constant cause I'm too lazy to make the functions static.
 var _mode_functions: Dictionary[MODE, Callable] = {
 		MODE.LINE : _generate_line,
 		MODE.GRID : _generate_grid,
-		MODE.GRID_HULL : _generate_grid_hull,
+		MODE.HOLLOW_GRID : _generate_hollow_grid,
 		MODE.RING : _generate_ring,
 		MODE.SPHERE : _generate_sphere,
 		MODE.SCATTER_BOX : _generate_scatter_box,
@@ -372,7 +372,7 @@ func _generate_grid() -> void:
 		_points[c] = p
 
 
-func _generate_grid_hull() -> void:
+func _generate_hollow_grid() -> void:
 	var verts: Array[Vector3] = []
 	
 	var center_offset: Vector3 = ((Vector3(grid_hull_size) - Vector3.ONE) / 2) * grid_hull_spacing

@@ -5,9 +5,9 @@ extends Node3D
 const COLINEAR_FIX_OFFSET: Vector3 = Vector3(0.001, 0.001, 0.001)
 const EDITOR_TICK_COOLDOWN: int = 2 # Only tick every x frame in the editor to save a bit of performance
 
-enum MODE {NONE, LINE, GRID, GRID_HULL, RING, SPHERE}
 enum AXIS {X, Y, Z}
 
+enum MODE {NONE, LINE, GRID, GRID_HULL, RING, SPHERE, SCATTER_BOX, SCATTER_SPHERE}
 # Can't be a constant cause I'm too lazy to make the functions static.
 var _mode_functions: Dictionary[MODE, Callable] = {
 		MODE.LINE : _generate_line,
@@ -15,7 +15,8 @@ var _mode_functions: Dictionary[MODE, Callable] = {
 		MODE.GRID_HULL : _generate_grid_hull,
 		MODE.RING : _generate_ring,
 		MODE.SPHERE : _generate_sphere,
-		}
+		MODE.SCATTER_BOX : _generate_scatter_box,
+		MODE.SCATTER_SPHERE : _generate_scatter_sphere}
 
 @export_group("Buttons")
 @export_tool_button("Randomize") var randomize_button: Callable = _randomize_children_order
@@ -43,7 +44,17 @@ var required: int:
 @export var look_at_center: bool = false
 @export var use_rotation_offset: bool = false
 @export var rotation_offset: Vector3 = Vector3.ZERO
-
+@export var use_random_x_offset: bool = false
+@export var random_x_offset_range: Vector2 = Vector2(-1.0, 1.0):
+	set(value): random_x_offset_range = Vector2(min(value.x, 0), max(value.y, 0))
+@export var use_random_y_offset: bool = false
+@export var random_y_offset_range: Vector2 = Vector2(-1.0, 1.0):
+	set(value): random_y_offset_range = Vector2(min(value.x, 0), max(value.y, 0))
+@export var use_random_z_offset: bool = false
+@export var random_z_offset_range: Vector2 = Vector2(-1.0, 1.0):
+	set(value): random_z_offset_range = Vector2(min(value.x, 0), max(value.y, 0))
+@export var random_spacing_iterations: int = 3
+@export var random_seed: int = randi()
 
 @export_group("Mode")
 @export var mode: MODE = MODE.NONE:
@@ -87,7 +98,16 @@ var required: int:
 		value.z = max(value.z, 2)
 		grid_hull_size = value
 
+@export_group("Scatter Box Settings")
+@export var scatter_box_size: Vector3 = Vector3(16, 16, 16)
+@export var scatter_box_minimum_spacing: float = 1.0
 
+@export_group("Scatter Sphere Settings")
+@export var scatter_sphere_radius: float = 8.0
+@export var scatter_sphere_minimum_spacing: float = 1.0
+
+
+var _random: RandomNumberGenerator = RandomNumberGenerator.new()
 var _editor_tick_count: int = 0
 var _count: int = 0
 var _required: int = 0
@@ -113,6 +133,7 @@ func _validate_property(property: Dictionary) -> void:
 
 
 func _ready() -> void:
+	_random.seed = random_seed
 	child_entered_tree.connect(_on_child_entered)
 	child_exiting_tree.connect(_on_child_exiting)
 
@@ -138,6 +159,9 @@ func _process(_delta: float) -> void:
 
 func _update() -> void:
 	_create_points()
+	_apply_random_offset()
+	# todo todo: swap the points array out for a transforms array
+	# This way each mode can generate more complex positioning more easily
 	_move_nodes()
 
 
@@ -154,6 +178,20 @@ func _create_points() -> void:
 	
 	if mode in _mode_functions:
 		_mode_functions[mode].call()
+
+
+func _apply_random_offset() -> void:
+	_random.seed = random_seed
+	
+	for idx: int in _points.size():
+		var p: Vector3 = _points[idx]
+		if use_random_x_offset:
+			p.x += _random.randf_range(random_x_offset_range.x, random_x_offset_range.y)
+		if use_random_y_offset:
+			p.y += _random.randf_range(random_y_offset_range.x, random_y_offset_range.y)
+		if use_random_z_offset:
+			p.z += _random.randf_range(random_z_offset_range.x, random_z_offset_range.y)
+		_points[idx] = p
 
 
 func _move_nodes() -> void:
@@ -180,8 +218,10 @@ func _move_nodes() -> void:
 
 
 func _randomize_children_order() -> void:
+	_random.seed = random_seed
+	
 	for n: Node in get_children():
-		move_child(n, randi_range(0, proxy.get_child_count() if proxy else get_child_count()))
+		move_child(n, _random.randi_range(0, proxy.get_child_count() if proxy else get_child_count()))
 
 
 func _clear_rotations() -> void:
@@ -375,3 +415,59 @@ func _generate_sphere() -> void:
 	
 	for c: int in min(_count, verts.size()):
 		_points[c] = verts[c]
+
+
+func _generate_scatter_box() -> void:
+	_random.seed = random_seed
+	
+	for c: int in _count:
+		
+		for i: int in random_spacing_iterations:
+			
+			var p: Vector3 = Vector3(
+				_random.randf_range(-(scatter_box_size.x * 0.5), scatter_box_size.x * 0.5),
+				_random.randf_range(-(scatter_box_size.y * 0.5), scatter_box_size.y * 0.5),
+				_random.randf_range(-(scatter_box_size.z * 0.5), scatter_box_size.z * 0.5))
+			
+			var passes: bool = true
+			
+			for pc: int in c:
+				if _points[pc].distance_to(p) < scatter_box_minimum_spacing:
+					passes = false
+			
+			# Position is valid. Break the loop.
+			if passes:
+				_points[c] = p
+				break
+			
+			# Last iteration anyways.
+			if i == 2:
+				_points[c] = p
+
+
+func _generate_scatter_sphere() -> void:
+	for c: int in _count:
+		
+		for i: int in random_spacing_iterations:
+			
+			var p: Vector3 = Vector3(
+				_random.randf_range(-1.0, 1.0),
+				_random.randf_range(-1.0, 1.0),
+				_random.randf_range(-1.0, 1.0))
+			p = p.normalized()
+			p *= _random.randf_range(-scatter_sphere_radius, scatter_sphere_radius)
+			
+			var passes: bool = true
+			
+			for pc: int in c:
+				if _points[pc].distance_to(p) < scatter_sphere_minimum_spacing:
+					passes = false
+			
+			# Position is valid. Break the loop.
+			if passes:
+				_points[c] = p
+				break
+			
+			# Last iteration anyways.
+			if i == 2:
+				_points[c] = p

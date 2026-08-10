@@ -37,6 +37,8 @@ var _mode_functions: Dictionary[MODE, Callable] = {
 @export_tool_button("Randomize Children") var randomize_button: Callable = _randomize_children_order
 ## Clears all applied rotations.
 @export_tool_button("Clear Rotations") var clear_rotations_button: Callable = _clear_rotations
+## Clears all applied scales.
+@export_tool_button("Clear Scale") var clear_scale_button: Callable = _clear_scale
 ## Replaces the Arranger3D with a plain Node3D
 @export_tool_button("Bake") var bake_button: Callable = _bake
 ## Duplicates the first child node until the children count matches the required count.
@@ -303,6 +305,12 @@ func _clear_rotations() -> void:
 	for n: Node in proxy.get_children() if proxy else get_children():
 		if n is Node3D:
 			n.rotation = Vector3.ZERO
+
+
+func _clear_scale() -> void:
+	for n: Node in proxy.get_children() if proxy else get_children():
+		if n is Node3D:
+			n.scale = Vector3.ONE
 
 
 func _bake() -> void:

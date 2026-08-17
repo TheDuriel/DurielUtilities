@@ -20,7 +20,9 @@ enum MODE {
 		RING, ## A ring with a set radius. Nodes are evenly spaced along it.
 		SPHERE, ## A Sphere primitive, nodes are placed at each vertex.
 		SCATTER_BOX, ## Scatters nodes randomly within a box.
-		SCATTER_SPHERE ## Scatters nodes randomly within a radius.
+		SCATTER_SPHERE, ## Scatters nodes randomly within a radius.
+		SPIRAL, ## Arranges nodes along a fixed length spiral. Like Line.
+		CURVE3D, ## Arranges nodes along a custom Curve3D.
 		}
 # Can't be a constant cause I'm too lazy to make the functions static.
 var _mode_functions: Dictionary[MODE, Callable] = {
@@ -30,7 +32,10 @@ var _mode_functions: Dictionary[MODE, Callable] = {
 		MODE.RING : _generate_ring,
 		MODE.SPHERE : _generate_sphere,
 		MODE.SCATTER_BOX : _generate_scatter_box,
-		MODE.SCATTER_SPHERE : _generate_scatter_sphere}
+		MODE.SCATTER_SPHERE : _generate_scatter_sphere,
+		MODE.SPIRAL : _generate_spiral,
+		MODE.CURVE3D : _generate_curve3d,
+		}
 
 @export_group("Buttons")
 ## Randomize the order of the nodes.
@@ -177,6 +182,16 @@ var required: int:
 @export var scatter_sphere_radius: float = 8.0
 ## Desired spacing between points, quality is limited by random_spacing_iterations.
 @export var scatter_sphere_minimum_spacing: float = 1.0
+
+@export_group("Spiral Settings")
+@export var spiral_radius: float = 8.0
+@export var spiral_length: float = 16.0
+@export var spiral_interval_degrees: float = 8
+@export var spiral_axis: AXIS = AXIS.Y
+
+@export_group("Curve3D Settings")
+@export var curve3d_is_local: bool = false
+@export var curve3d_path_node: Path3D
 
 
 var _random: RandomNumberGenerator = RandomNumberGenerator.new()
@@ -384,7 +399,8 @@ func _double_nodes() -> void:
 			proxy.add_child(n)
 		else:
 			add_child(n)
-		n.owner = n.owner
+		
+		n.owner = n.owner if n.owner else owner if owner else self
 
 
 func _delete_half() -> void:
@@ -497,6 +513,8 @@ func _generate_sphere() -> void:
 
 
 func _generate_scatter_box() -> void:
+	_required = -1
+	
 	_random.seed = random_seed
 	
 	for c: int in _count:
@@ -525,6 +543,8 @@ func _generate_scatter_box() -> void:
 
 
 func _generate_scatter_sphere() -> void:
+	_required = -1
+	
 	for c: int in _count:
 		
 		for i: int in random_spacing_iterations:
@@ -550,3 +570,39 @@ func _generate_scatter_sphere() -> void:
 			# Last iteration anyways.
 			if i == 2:
 				_points[c] = p
+
+
+func _generate_spiral() -> void:
+	_required = -1
+	
+	for c: int in _count:
+		
+		var degrees: float = spiral_interval_degrees * c
+		var rad: float = deg_to_rad(degrees)
+		var height: float = (spiral_length / _count) * c
+		
+		var p: Vector3 = Vector3.FORWARD.rotated(Vector3.UP, rad)
+		p *= spiral_radius
+		p.y = height
+		
+		match spiral_axis:
+			AXIS.X: _points[c] = p.rotated(Vector3.RIGHT, TAU / 4)
+			AXIS.Y: _points[c] = p
+			AXIS.Z: _points[c] = p.rotated(Vector3.FORWARD, TAU / 4)
+
+
+func _generate_curve3d() -> void:
+	_required = -1
+	
+	if not curve3d_path_node:
+		return
+	
+	var curve: Curve3D = curve3d_path_node.curve
+	var l: float = curve.get_baked_length()
+	var ll: float = l / _count
+	
+	for c: int in _count:
+		var p: Vector3 = curve.sample_baked(ll * c)
+		if not curve3d_is_local:
+			p += curve3d_path_node.global_position
+			_points[c] = p

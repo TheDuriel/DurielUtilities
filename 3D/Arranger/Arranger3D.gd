@@ -226,6 +226,11 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
+	if is_queued_for_deletion():
+		return
+	elif owner and owner.is_queued_for_deletion():
+		return
+	
 	if Engine.is_editor_hint():
 		if not run_in_editor:
 			return
